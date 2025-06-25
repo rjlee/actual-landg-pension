@@ -1,0 +1,39 @@
+# Dependency directories
+node_modules/
+
+# Log files
+*.log
+
+# Environment files
+.env
+
+# (Obsolete) Monzo token cache directory
+# monzo_cache/
+
+# Actual Budget cache directories (generated)
+budget/
+# Persisted application and cache data (ignored, but kept in repo via .gitkeep)
+data/*
+!data/.gitkeep
+!data/budget/
+data/budget/*
+!data/budget/.gitkeep
+
+# Custom resource files
+resources/
+
+# Coverage directory
+coverage/
+
+# Misc scripts to ignore
+deploy.sh
+
+# IDE settings
+.vscode/
+.idea/
+
+# dotenv local overrides
+.env.local
+
+# Misc
+.DS_Store

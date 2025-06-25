@@ -1,0 +1,72 @@
+{
+  "name": "actual-landg-pension",
+  "version": "1.2.0",
+  "description": "Sync Legal & General pension value to Actual Budget accounts",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js --mode sync",
+    "sync": "node src/index.js --mode sync",
+    "daemon": "node src/index.js --mode daemon",
+    "test": "LOG_LEVEL=silent jest --passWithNoTests",
+    "prepare": "husky install || true",
+    "lint": "eslint . && npm run lint:ejs",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint:ejs": "npx ejs-lint \"src/views/**/*.ejs\"",
+    "prerelease": "npm run lint && npm run format:check && npm test",
+    "release": "semantic-release"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@actual-app/api": "^25.6.1",
+    "axios": "^1.5.0",
+    "cookie-session": "^2.0.0",
+    "dotenv": "^16.5.0",
+    "ejs": "^3.1.9",
+    "ejs-lint": "^2.0.1",
+    "express": "^4.18.2",
+    "js-yaml": "^4.1.0",
+    "node-cron": "^3.0.0",
+    "pino": "^8.0.0",
+    "puppeteer": "^24.10.2",
+    "uuid": "^9.0.0",
+    "yargs": "^17.7.2"
+  },
+  "devDependencies": {
+    "@semantic-release/changelog": "^6.0.0",
+    "@semantic-release/commit-analyzer": "^10.0.0",
+    "@semantic-release/git": "^10.0.0",
+    "@semantic-release/github": "^9.0.0",
+    "@semantic-release/npm": "^12.0.1",
+    "@semantic-release/release-notes-generator": "^10.0.0",
+    "eslint": "^8.0.0",
+    "husky": "^8.0.0",
+    "jest": "^29.6.1",
+    "jest-environment-jsdom": "^29.6.1",
+    "jsdom": "^21.1.0",
+    "lint-staged": "^16.0.0",
+    "prettier": "^3.0.0",
+    "semantic-release": "^21.0.0",
+    "supertest": "^6.3.3"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "pre-push": "npm run lint && npm test"
+    }
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.ejs": [
+      "npx ejs-lint"
+    ],
+    "*.md": [
+      "prettier --write"
+    ]
+  }
+}
