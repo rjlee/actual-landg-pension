@@ -25,7 +25,7 @@ LANDG_2FA_TIMEOUT=60
 # Actual Budget API configuration
 ACTUAL_SERVER_URL=https://your-actual-server
 ACTUAL_PASSWORD=yourBudgetPassword
-ACTUAL_BUDGET_ID=yourBudgetUUID
+ACTUAL_SYNC_ID=yourBudgetUUID
 ACTUAL_BUDGET_ENCRYPTION_PASSWORD=yourBudgetFileEncryptionPassword
 
 # Web UI session auth (disable login with UI_AUTH_ENABLED=false)

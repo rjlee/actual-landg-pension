@@ -185,18 +185,20 @@ async function startWebUi(httpPort, verbose, debug) {
       } catch (_) {
         // no mapping file or invalid JSON
       }
-      // Fetch Actual Budget accounts; fallback to empty on error
+      // Fetch Actual Budget accounts once budget is ready; otherwise skip
       let accountsList = [];
-      try {
-        accountsList = await api.getAccounts();
-      } catch (err) {
-        // If the budget isn’t loaded yet, skip accounts fetch; otherwise log error
-        if (err && err.message === "No budget file is open") {
-          logger.info("Budget not yet loaded; skipping accounts fetch");
-        } else {
-          logger.error({ err }, "Failed to fetch Actual Budget accounts");
+      if (budgetReady) {
+        try {
+          accountsList = await api.getAccounts();
+        } catch (err) {
+          if (err && err.message === "No budget file is open") {
+            logger.info("Budget not yet loaded; skipping accounts fetch");
+          } else {
+            logger.error({ err }, "Failed to fetch Actual Budget accounts");
+          }
         }
-        accountsList = [];
+      } else {
+        logger.info("Budget not yet loaded; skipping accounts fetch");
       }
       // Provide Legal & General login state for UI
       return res.json({ mapping, accounts: accountsList, landg: serverState });
