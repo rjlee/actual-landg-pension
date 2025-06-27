@@ -1,3 +1,15 @@
+# [1.1.0](https://github.com/rjlee/actual-landg-pension/compare/v1.0.0...v1.1.0) (2025-06-27)
+
+
+### Bug Fixes
+
+* correct string formatting in logging and error messages ([cb8a44a](https://github.com/rjlee/actual-landg-pension/commit/cb8a44a5cf8ae070c4400d98278dc120e22c82e4))
+
+
+### Features
+
+* update budget synchronization logic and environment variable names ([5151996](https://github.com/rjlee/actual-landg-pension/commit/5151996dc5218819a99eb6a5c80a09b09d3a2e1b))
+
 # 1.0.0 (2025-06-25)
 
 
