@@ -11,7 +11,7 @@ async function openBudget() {
   const syncId = process.env.ACTUAL_SYNC_ID;
   if (!url || !password || !syncId) {
     throw new Error(
-      "Please set ACTUAL_SERVER_URL, ACTUAL_PASSWORD, and ACTUAL_SYNC_ID environment variables"
+      "Please set ACTUAL_SERVER_URL, ACTUAL_PASSWORD, and ACTUAL_SYNC_ID environment variables",
     );
   }
   const dataDir = process.env.BUDGET_CACHE_DIR || "./data/budget";

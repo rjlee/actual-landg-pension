@@ -27,7 +27,7 @@ describe("openBudget", () => {
 
   it("throws error when required env vars are missing", async () => {
     await expect(openBudget()).rejects.toThrow(
-      "Please set ACTUAL_SERVER_URL, ACTUAL_PASSWORD, and ACTUAL_SYNC_ID environment variables"
+      "Please set ACTUAL_SERVER_URL, ACTUAL_PASSWORD, and ACTUAL_SYNC_ID environment variables",
     );
   });
 
