@@ -22,11 +22,9 @@ async function runSync({
       ? logger
       : { info: () => {}, debug: () => {}, warn: () => {}, error: () => {} };
   const cwd = process.cwd();
-  const mappingFile =
-    process.env.MAPPING_FILE || config.MAPPING_FILE || "./data/mapping.json";
-  const mappingPath = path.isAbsolute(mappingFile)
-    ? mappingFile
-    : path.join(cwd, mappingFile);
+  const dataDir = process.env.DATA_DIR || config.DATA_DIR || "./data";
+  const mappingName = "mapping.json";
+  const mappingPath = path.resolve(cwd, dataDir, mappingName);
 
   // Load or initialize mapping entries
   let mapping = [];

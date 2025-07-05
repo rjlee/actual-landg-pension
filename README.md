@@ -37,7 +37,7 @@ SSL_KEY=/path/to/privkey.pem
 SSL_CERT=/path/to/fullchain.pem
 ```
 
-2. Copy `config.example.yaml` to `config.yaml` if you need to override defaults (schedule, HTTP_PORT, MAPPING_FILE).
+2. Copy `config.example.yaml` to `config.yaml` if you need to override defaults (schedule, HTTP_PORT, DATA_DIR, BUDGET_DIR, MAPPING_FILE).
 
 3. Build and run with Docker Compose:
 

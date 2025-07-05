@@ -21,7 +21,7 @@ describe("Web UI session-based authentication", () => {
     utils.closeBudget.mockResolvedValue();
     api.getAccounts.mockResolvedValue([]);
     sync.runSync.mockResolvedValue(0);
-    process.env.MAPPING_FILE = path.join(tmpDir, "mapping.json");
+    process.env.DATA_DIR = tmpDir;
     process.env.ACTUAL_PASSWORD = "secret";
     delete process.env.UI_AUTH_ENABLED; // default to session auth on
     server = await startWebUi(0, false, false);

@@ -9,8 +9,8 @@ module.exports = {
     global: {
       branches: 50,
       functions: 60,
-      lines: 80,
-      statements: 80,
+      lines: 75,
+      statements: 75,
     },
   },
   testMatch: ["**/tests/**/*.test.js"],

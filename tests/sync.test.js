@@ -18,14 +18,18 @@ describe("runSync", () => {
   let tmpDir;
   beforeEach(() => {
     tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "mapping-"));
-    process.env.MAPPING_FILE = path.join(tmpDir, "mapping.json");
+    process.env.DATA_DIR = tmpDir;
     // reset mocks
     landgClient.getPensionValue.mockReset();
     api.getAccountBalance.mockReset();
     api.addTransactions.mockReset();
     api.getAccounts.mockReset();
     // prepare a mapping file with one account entry
-    const mappingPath = path.resolve(process.cwd(), process.env.MAPPING_FILE);
+    const mappingPath = path.resolve(
+      process.cwd(),
+      process.env.DATA_DIR,
+      "mapping.json",
+    );
     fs.mkdirSync(path.dirname(mappingPath), { recursive: true });
     fs.writeFileSync(
       mappingPath,
@@ -95,7 +99,11 @@ describe("runSync", () => {
     api.getAccountBalance.mockResolvedValue(0);
     api.addTransactions.mockResolvedValue();
     // Prepare mapping file
-    const mappingPath = process.env.MAPPING_FILE;
+    const mappingPath = path.resolve(
+      process.cwd(),
+      process.env.DATA_DIR,
+      "mapping.json",
+    );
     fs.writeFileSync(
       mappingPath,
       JSON.stringify([{ accountId: "acct-1", lastBalance: 0 }]),

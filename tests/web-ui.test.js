@@ -25,8 +25,8 @@ describe("Web UI server", () => {
   const mappingFile = path.join(tmpDir, "mapping.json");
 
   beforeAll(async () => {
-    // Prepare mapping file env
-    process.env.MAPPING_FILE = mappingFile;
+    // Prepare mapping file directory via DATA_DIR
+    process.env.DATA_DIR = tmpDir;
     // Ensure utils.openBudget resolves and sets budgetReady
     utils.openBudget.mockResolvedValue();
     utils.closeBudget.mockResolvedValue();

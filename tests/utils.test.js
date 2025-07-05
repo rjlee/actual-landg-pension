@@ -11,6 +11,7 @@ describe("openBudget", () => {
     delete process.env.ACTUAL_PASSWORD;
     delete process.env.ACTUAL_SYNC_ID;
     delete process.env.BUDGET_CACHE_DIR;
+    delete process.env.BUDGET_DIR;
     jest.resetAllMocks();
     if (fs.existsSync(testDir))
       fs.rmSync(testDir, { recursive: true, force: true });
@@ -20,6 +21,7 @@ describe("openBudget", () => {
     delete process.env.ACTUAL_PASSWORD;
     delete process.env.ACTUAL_SYNC_ID;
     delete process.env.BUDGET_CACHE_DIR;
+    delete process.env.BUDGET_DIR;
     jest.resetAllMocks();
     if (fs.existsSync(testDir))
       fs.rmSync(testDir, { recursive: true, force: true });
@@ -35,7 +37,7 @@ describe("openBudget", () => {
     process.env.ACTUAL_SERVER_URL = "http://x";
     process.env.ACTUAL_PASSWORD = "pw";
     process.env.ACTUAL_SYNC_ID = "bid";
-    process.env.BUDGET_CACHE_DIR = testDir;
+    process.env.BUDGET_DIR = testDir;
 
     api.init.mockResolvedValue();
     api.downloadBudget.mockResolvedValue();

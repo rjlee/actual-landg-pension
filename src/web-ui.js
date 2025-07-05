@@ -143,8 +143,9 @@ async function startWebUi(httpPort, verbose, debug) {
     logger.info(meta, "HTTP request");
     next();
   });
-  const mappingFile =
-    process.env.MAPPING_FILE || config.MAPPING_FILE || "./data/mapping.json";
+  const dataDir = process.env.DATA_DIR || config.DATA_DIR || "./data";
+  const mappingName = "mapping.json";
+  const mappingFile = path.resolve(process.cwd(), dataDir, mappingName);
 
   // Landg login endpoints
   app.post(
