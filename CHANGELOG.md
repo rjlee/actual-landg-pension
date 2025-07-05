@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/rjlee/actual-landg-pension/compare/v1.1.0...v1.1.1) (2025-07-05)
+
+
+### Bug Fixes
+
+* Implement code changes to enhance functionality and improve performance ([4353d63](https://github.com/rjlee/actual-landg-pension/commit/4353d6354bc4d1ad417f2d7042093a73625e15d4))
+
 # [1.1.0](https://github.com/rjlee/actual-landg-pension/compare/v1.0.0...v1.1.0) (2025-06-27)
 
 
