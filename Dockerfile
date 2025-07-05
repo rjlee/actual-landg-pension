@@ -1,4 +1,4 @@
-FROM node:20-bullseye-slim AS builder
+FROM node:24-bullseye-slim AS builder
 
 # Set working directory
 WORKDIR /app
@@ -30,7 +30,7 @@ RUN npm install --omit=dev
 # Copy application source
 COPY . .
 
-FROM node:20-bullseye-slim AS runner
+FROM node:24-bullseye-slim AS runner
 
 WORKDIR /app
 
