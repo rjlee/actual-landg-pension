@@ -51,7 +51,22 @@ async function startWebUi(httpPort, verbose, debug) {
     );
     process.exit(1);
   }
+  // Determine data directory and budget cache path (mirror utils.openBudget logic)
+  const dataDir = process.env.DATA_DIR || config.DATA_DIR || "./data";
+  const budgetDir =
+    process.env.BUDGET_DIR ||
+    process.env.BUDGET_CACHE_DIR ||
+    path.join(dataDir, "budget");
+  // If we already have a cached budget file, consider budget ready immediately
   let budgetReady = false;
+  try {
+    if (fs.existsSync(budgetDir) && fs.readdirSync(budgetDir).length > 0) {
+      budgetReady = true;
+    }
+  } catch (_) {
+    // ignore errors checking existing budget cache
+  }
+  // Kick off background budget download/sync
   Promise.resolve(openBudget())
     .then(() => {
       budgetReady = true;
@@ -143,7 +158,6 @@ async function startWebUi(httpPort, verbose, debug) {
     logger.info(meta, "HTTP request");
     next();
   });
-  const dataDir = process.env.DATA_DIR || config.DATA_DIR || "./data";
   const mappingName = "mapping.json";
   const mappingFile = path.resolve(process.cwd(), dataDir, mappingName);
 
