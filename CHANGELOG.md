@@ -1,3 +1,10 @@
+## [1.1.3](https://github.com/rjlee/actual-landg-pension/compare/v1.1.2...v1.1.3) (2025-07-17)
+
+
+### Bug Fixes
+
+* improve budget initialization and retry logic in UI server ([87d454b](https://github.com/rjlee/actual-landg-pension/commit/87d454bc11305772bfdaf92a24b3f61bb3e8c889))
+
 ## [1.1.2](https://github.com/rjlee/actual-landg-pension/compare/v1.1.1...v1.1.2) (2025-07-06)
 
 
