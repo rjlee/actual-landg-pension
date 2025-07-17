@@ -66,15 +66,17 @@ async function startWebUi(httpPort, verbose, debug) {
   } catch (_) {
     // ignore errors checking existing budget cache
   }
-  // Kick off background budget download/sync
+  // Attempt to open/init the Actual‑API budget.  Only mark ready on success.
   Promise.resolve(openBudget())
     .then(() => {
       budgetReady = true;
     })
     .catch((err) => {
-      logger.error({ err }, "Budget download failed");
-      // Mark as ready so UI doesn’t hang indefinitely
-      budgetReady = true;
+      // Keep budgetReady=false so we won't call api.getAccounts() on a failed init.
+      logger.error(
+        { err },
+        "Budget failed to open; will retry on next /api/data",
+      );
     });
   const app = express();
   app.use(express.json());
@@ -193,6 +195,15 @@ async function startWebUi(httpPort, verbose, debug) {
   app.get(
     "/api/data",
     asyncHandler(async (_req, res) => {
+      // If budget isn't ready yet, retry opening it on‑demand
+      if (!budgetReady) {
+        try {
+          await openBudget();
+          budgetReady = true;
+        } catch (err) {
+          logger.error({ err }, "Budget retry failed; skipping accounts fetch");
+        }
+      }
       // Read existing mappings
       let mapping = [];
       try {
