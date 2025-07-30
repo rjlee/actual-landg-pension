@@ -51,12 +51,8 @@ async function startWebUi(httpPort, verbose, debug) {
     );
     process.exit(1);
   }
-  // Determine data directory and budget cache path (mirror utils.openBudget logic)
+  // Determine data directory (mirror utils.openBudget logic)
   const dataDir = process.env.DATA_DIR || config.DATA_DIR || "./data";
-  const budgetDir =
-    process.env.BUDGET_DIR ||
-    process.env.BUDGET_CACHE_DIR ||
-    path.join(dataDir, "budget");
   // Attempt to open/init the Actual‑API budget up front.  Will retry on demand in /api/data.
   let budgetReady = false;
   try {
