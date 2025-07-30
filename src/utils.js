@@ -38,6 +38,8 @@ async function openBudget() {
       logger.info("Budget downloaded");
       hasDownloadedBudget = true;
     } catch (err) {
+      // keep hasDownloadedBudget=false so we retry download on next open
+      hasDownloadedBudget = false;
       logger.warn({ err }, "Failed to download budget");
     }
   }
@@ -47,6 +49,10 @@ async function openBudget() {
     await api.sync();
     logger.info("Budget synced");
   } catch (err) {
+    // if cache is missing or invalid, allow re-download next time
+    if (err && err.message === "No budget file is open") {
+      hasDownloadedBudget = false;
+    }
     logger.warn({ err }, "Failed to sync budget");
   }
 }
