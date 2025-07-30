@@ -1,3 +1,11 @@
+## [1.1.5](https://github.com/rjlee/actual-landg-pension/compare/v1.1.4...v1.1.5) (2025-07-30)
+
+
+### Bug Fixes
+
+* improve budget initialization logic and logging in UI server ([cbe33b7](https://github.com/rjlee/actual-landg-pension/commit/cbe33b77095883725b150daac7e5390855974dbd))
+* simplify budget directory determination in UI server ([b0f51a3](https://github.com/rjlee/actual-landg-pension/commit/b0f51a3b6eed3270500f68510778a2d4b309e3f9))
+
 ## [1.1.4](https://github.com/rjlee/actual-landg-pension/compare/v1.1.3...v1.1.4) (2025-07-30)
 
 
