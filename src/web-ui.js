@@ -57,27 +57,18 @@ async function startWebUi(httpPort, verbose, debug) {
     process.env.BUDGET_DIR ||
     process.env.BUDGET_CACHE_DIR ||
     path.join(dataDir, "budget");
-  // If we already have a cached budget file, consider budget ready immediately
+  // Attempt to open/init the Actual‑API budget up front.  Will retry on demand in /api/data.
   let budgetReady = false;
   try {
-    if (fs.existsSync(budgetDir) && fs.readdirSync(budgetDir).length > 0) {
-      budgetReady = true;
-    }
-  } catch (_) {
-    // ignore errors checking existing budget cache
+    await openBudget();
+    budgetReady = true;
+    logger.info("Initial budget load complete; web UI is ready");
+  } catch (err) {
+    logger.error(
+      { err },
+      "Initial budget load failed; web UI will retry on /api/data",
+    );
   }
-  // Attempt to open/init the Actual‑API budget.  Only mark ready on success.
-  Promise.resolve(openBudget())
-    .then(() => {
-      budgetReady = true;
-    })
-    .catch((err) => {
-      // Keep budgetReady=false so we won't call api.getAccounts() on a failed init.
-      logger.error(
-        { err },
-        "Budget failed to open; will retry on next /api/data",
-      );
-    });
   const app = express();
   app.use(express.json());
   // Serve static assets (JS/CSS) from the public/ directory at project root
