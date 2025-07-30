@@ -1,3 +1,10 @@
+## [1.1.4](https://github.com/rjlee/actual-landg-pension/compare/v1.1.3...v1.1.4) (2025-07-30)
+
+
+### Bug Fixes
+
+* ensure budget re-download on failure to sync or download ([73e8e26](https://github.com/rjlee/actual-landg-pension/commit/73e8e264eaefc95fb44c21384afd889a4b95f3bf))
+
 ## [1.1.3](https://github.com/rjlee/actual-landg-pension/compare/v1.1.2...v1.1.3) (2025-07-17)
 
 
