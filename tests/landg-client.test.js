@@ -3,7 +3,6 @@ const logger = require("../src/logger");
 const {
   getPensionValue,
   submitTwoFACode,
-  serverState,
 } = require("../src/landg-client");
 
 jest.mock("puppeteer");
