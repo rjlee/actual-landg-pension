@@ -1,3 +1,13 @@
+## [1.1.6](https://github.com/rjlee/actual-landg-pension/compare/v1.1.5...v1.1.6) (2025-08-08)
+
+
+### Bug Fixes
+
+* enhance 2FA handling in pension value retrieval tests ([72e420a](https://github.com/rjlee/actual-landg-pension/commit/72e420a0cc9dfe4fb782c69025c464b1daecb5be))
+* format import statements for consistency in landg-client tests ([dc129c7](https://github.com/rjlee/actual-landg-pension/commit/dc129c749e1fbc037f835203680bcd7171847994))
+* implement 2FA handling in pension value retrieval process ([f7076db](https://github.com/rjlee/actual-landg-pension/commit/f7076dbeb79c08379e7782e785be95ac96346ccb))
+* remove unused serverState import from landg-client tests ([20798a6](https://github.com/rjlee/actual-landg-pension/commit/20798a644c7b81dbc3d384ab444196006f5fff7b))
+
 ## [1.1.5](https://github.com/rjlee/actual-landg-pension/compare/v1.1.4...v1.1.5) (2025-07-30)
 
 
