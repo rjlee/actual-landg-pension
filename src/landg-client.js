@@ -13,8 +13,13 @@ const serverState = {
  * Stub 2FA submit handler (not used for LG client)
  * @param {string} code
  */
-function submitTwoFACode(_code) {
-  // No-op for Legal & General client
+/**
+ * Receive 2FA code from UI and wake up scraper
+ * @param {string} code one-time passcode from SMS
+ */
+function submitTwoFACode(code) {
+  serverState.value = code;
+  serverState.status = "idle";
 }
 
 /**
@@ -115,6 +120,66 @@ async function getPensionValue({
       { timeout: 10000 },
     );
     /* eslint-enable no-undef */
+    // Handle optional 2FA verification step (choose SMS and continue)
+    try {
+      // If the SMS vs Email step appears, choose SMS and continue
+      await page.waitForSelector('lg-segment-button[data-testid="sms"]', {
+        timeout: 5000,
+      });
+      await page.click('lg-segment-button[data-testid="sms"]');
+      /* eslint-disable no-undef */
+      await page.waitForFunction(
+        () => {
+          const btn = Array.from(document.querySelectorAll("button")).find(
+            (el) => el.textContent.trim() === "Continue",
+          );
+          if (btn) btn.click();
+          return !!btn;
+        },
+        { timeout: 10000 },
+      );
+      /* eslint-enable no-undef */
+
+      // Wait for verification code page and prompt user via UI
+      const codeTimeout = (process.env.LANDG_2FA_TIMEOUT || 60) * 1000;
+      await page.waitForSelector('input[data-testid="verification-code"]', {
+        timeout: codeTimeout,
+      });
+      serverState.status = "awaiting-2fa";
+      const code = await new Promise((resolve, reject) => {
+        const kill = setTimeout(
+          () => reject(new Error("2FA code timeout")),
+          codeTimeout,
+        );
+        const poll = setInterval(() => {
+          if (serverState.status === "error") {
+            clearTimeout(kill);
+            clearInterval(poll);
+            return reject(new Error(serverState.error));
+          }
+          if (serverState.value) {
+            clearTimeout(kill);
+            clearInterval(poll);
+            return resolve(serverState.value);
+          }
+        }, 500);
+      });
+      await page.type('input[data-testid="verification-code"]', code);
+      /* eslint-disable no-undef */
+      await page.waitForFunction(
+        () => {
+          const btn = Array.from(document.querySelectorAll("button")).find(
+            (el) => el.textContent.trim() === "Continue",
+          );
+          if (btn) btn.click();
+          return !!btn;
+        },
+        { timeout: 10000 },
+      );
+      /* eslint-enable no-undef */
+    } catch (_err) {
+      // no-op if optional steps are not present or timeout occurs
+    }
     // Extract total savings text from the page
     /* eslint-disable no-undef */
     await page.waitForFunction(
