@@ -1,6 +1,10 @@
 const puppeteer = require("puppeteer");
 const logger = require("../src/logger");
-const { getPensionValue } = require("../src/landg-client");
+const {
+  getPensionValue,
+  submitTwoFACode,
+  serverState,
+} = require("../src/landg-client");
 
 jest.mock("puppeteer");
 
@@ -38,6 +42,8 @@ describe("Legal & General Client", () => {
   it("should scrape pension value and return a number", async () => {
     // Simulate found savings text via XPath + evaluate
     // (page.$x and page.evaluate are stubbed in beforeEach)
+    // simulate user-entered 2FA code asynchronously so scraper picks it up after reset
+    setImmediate(() => submitTwoFACode("123456"));
     const value = await getPensionValue({
       email: "x",
       password: "y",
@@ -68,8 +74,8 @@ describe("Legal & General Client", () => {
       "y",
     );
 
-    // Two calls to click buttons (Continue + Log in) and one to extract savings
-    expect(page.waitForFunction).toHaveBeenCalledTimes(3);
+    // Five calls to click buttons (SMS Continue + Email Continue + Code Continue + Login + savings)
+    expect(page.waitForFunction).toHaveBeenCalledTimes(5);
     expect(page.evaluate).toHaveBeenCalled();
   });
   describe("error handling and debug logging", () => {
@@ -108,6 +114,8 @@ describe("Legal & General Client", () => {
       puppeteer.launch.mockResolvedValue(browser);
       page.waitForFunction.mockResolvedValue(true);
       page.evaluate.mockResolvedValue("Your total savings are");
+      // simulate user-entered 2FA code asynchronously so scraper picks it up
+      setImmediate(() => submitTwoFACode("000000"));
       await expect(
         getPensionValue({ email: "x", password: "y", cookiesPath: "/tmp" }),
       ).rejects.toThrow("Savings amount not found in text");
@@ -122,6 +130,8 @@ describe("Legal & General Client", () => {
         .mockResolvedValue(true);
       page.waitForFunction.mockResolvedValue(true);
       page.evaluate.mockResolvedValue("Your total savings are £1,234.56");
+      // simulate user-entered 2FA code asynchronously so scraper picks it up
+      setImmediate(() => submitTwoFACode("000000"));
       await expect(
         getPensionValue({ email: "x", password: "y", cookiesPath: "/tmp" }),
       ).resolves.toBeCloseTo(1234.56);
