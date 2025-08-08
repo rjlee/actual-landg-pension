@@ -1,9 +1,6 @@
 const puppeteer = require("puppeteer");
 const logger = require("../src/logger");
-const {
-  getPensionValue,
-  submitTwoFACode,
-} = require("../src/landg-client");
+const { getPensionValue, submitTwoFACode } = require("../src/landg-client");
 
 jest.mock("puppeteer");
 
