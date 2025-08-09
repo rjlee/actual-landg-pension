@@ -1,3 +1,10 @@
+## [1.1.7](https://github.com/rjlee/actual-landg-pension/compare/v1.1.6...v1.1.7) (2025-08-09)
+
+
+### Bug Fixes
+
+* improve budget reopening logic in startWebUi function ([a0b402a](https://github.com/rjlee/actual-landg-pension/commit/a0b402a07325e6e8115b8e08fcc02be30daae621))
+
 ## [1.1.6](https://github.com/rjlee/actual-landg-pension/compare/v1.1.5...v1.1.6) (2025-08-08)
 
 
