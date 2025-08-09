@@ -205,7 +205,17 @@ async function startWebUi(httpPort, verbose, debug) {
           accountsList = await api.getAccounts();
         } catch (err) {
           if (err && err.message === "No budget file is open") {
-            logger.info("Budget not yet loaded; skipping accounts fetch");
+            // Budget may have been closed by a background sync; attempt a one-time reopen
+            logger.info("Budget not yet loaded; attempting reopen");
+            try {
+              await openBudget();
+              budgetReady = true;
+              accountsList = await api.getAccounts();
+            } catch (err2) {
+              // Still not available; mark as not ready and skip accounts fetch
+              budgetReady = false;
+              logger.info("Budget not yet loaded; skipping accounts fetch");
+            }
           } else {
             logger.error({ err }, "Failed to fetch Actual Budget accounts");
           }
