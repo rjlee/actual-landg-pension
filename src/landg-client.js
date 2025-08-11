@@ -97,7 +97,7 @@ async function getPensionValue({
     // Click the "Continue" button by matching its text via page function
     /* eslint-disable no-undef */
     await page.waitForFunction(
-      () => {
+      /* istanbul ignore next */ () => {
         const b = Array.from(document.querySelectorAll("button")).find(
           (el) => el.textContent.trim() === "Continue",
         );
@@ -116,7 +116,7 @@ async function getPensionValue({
     // Click the "Log in" button by matching its text via page function
     /* eslint-disable no-undef */
     await page.waitForFunction(
-      () => {
+      /* istanbul ignore next */ () => {
         const b = Array.from(document.querySelectorAll("button")).find(
           (el) => el.textContent.trim() === "Log in",
         );
@@ -135,7 +135,7 @@ async function getPensionValue({
       await page.click('lg-segment-button[data-testid="sms"]');
       /* eslint-disable no-undef */
       await page.waitForFunction(
-        () => {
+        /* istanbul ignore next */ () => {
           const btn = Array.from(document.querySelectorAll("button")).find(
             (el) => el.textContent.trim() === "Continue",
           );
@@ -173,7 +173,7 @@ async function getPensionValue({
       await page.type('input[data-testid="verification-code"]', code);
       /* eslint-disable no-undef */
       await page.waitForFunction(
-        () => {
+        /* istanbul ignore next */ () => {
           const btn = Array.from(document.querySelectorAll("button")).find(
             (el) => el.textContent.trim() === "Continue",
           );
@@ -189,7 +189,7 @@ async function getPensionValue({
     // Extract total savings text from the page
     /* eslint-disable no-undef */
     await page.waitForFunction(
-      () =>
+      /* istanbul ignore next */ () =>
         Array.from(document.querySelectorAll("div")).some((d) =>
           d.textContent.trim().startsWith("Your total savings are"),
         ),
@@ -197,12 +197,14 @@ async function getPensionValue({
     );
     /* eslint-enable no-undef */
     /* eslint-disable no-undef */
-    const rawText = await page.evaluate(() => {
-      const el = Array.from(document.querySelectorAll("div")).find((d) =>
-        d.textContent.trim().startsWith("Your total savings are"),
-      );
-      return el ? el.textContent : "";
-    });
+    const rawText = await page.evaluate(
+      /* istanbul ignore next */ () => {
+        const el = Array.from(document.querySelectorAll("div")).find((d) =>
+          d.textContent.trim().startsWith("Your total savings are"),
+        );
+        return el ? el.textContent : "";
+      },
+    );
     /* eslint-enable no-undef */
     const m = rawText.match(/£([\d,]+\.\d{2})/);
     if (!m) {
