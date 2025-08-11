@@ -1,3 +1,11 @@
+## [1.1.8](https://github.com/rjlee/actual-landg-pension/compare/v1.1.7...v1.1.8) (2025-08-11)
+
+
+### Bug Fixes
+
+* add istanbul ignore comments to page function callbacks in getPensionValue ([59e9806](https://github.com/rjlee/actual-landg-pension/commit/59e9806aa31adb57ce6805c8022471a7a4c2bfa7))
+* enhance Dockerfile for Puppeteer and update Chromium launch options ([aa42f87](https://github.com/rjlee/actual-landg-pension/commit/aa42f877a0b0d55c20f3e9f6e94b1db4b39aefaa))
+
 ## [1.1.7](https://github.com/rjlee/actual-landg-pension/compare/v1.1.6...v1.1.7) (2025-08-09)
 
 
