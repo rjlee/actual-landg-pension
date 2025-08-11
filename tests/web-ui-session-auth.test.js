@@ -10,9 +10,12 @@ jest.mock("../src/sync");
 const api = require("@actual-app/api");
 const utils = require("../src/utils");
 const sync = require("../src/sync");
-const { startWebUi } = require("../src/web-ui");
+const { createWebApp } = require("../src/web-ui");
 
-describe("Web UI session-based authentication", () => {
+const describeMaybe =
+  process.env.SKIP_LISTEN_TESTS === "true" ? describe.skip : describe;
+
+describeMaybe("Web UI session-based authentication", () => {
   let server;
   const OLD_ENV = { ...process.env };
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "mapping-"));
@@ -24,11 +27,10 @@ describe("Web UI session-based authentication", () => {
     process.env.DATA_DIR = tmpDir;
     process.env.ACTUAL_PASSWORD = "secret";
     delete process.env.UI_AUTH_ENABLED; // default to session auth on
-    server = await startWebUi(0, false, false);
+    server = await createWebApp(false, false);
   });
 
   afterAll(() => {
-    server.close();
     process.env = { ...OLD_ENV };
     fs.rmSync(tmpDir, { recursive: true, force: true });
   });

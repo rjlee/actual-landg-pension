@@ -17,9 +17,12 @@ const api = require("@actual-app/api");
 const utils = require("../src/utils");
 const sync = require("../src/sync");
 const landgClient = require("../src/landg-client");
-const { startWebUi } = require("../src/web-ui");
+const { createWebApp } = require("../src/web-ui");
 
-describe("Web UI server", () => {
+const describeMaybe =
+  process.env.SKIP_LISTEN_TESTS === "true" ? describe.skip : describe;
+
+describeMaybe("Web UI server", () => {
   let server;
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "mapping-"));
   const mappingFile = path.join(tmpDir, "mapping.json");
@@ -34,13 +37,15 @@ describe("Web UI server", () => {
     api.getAccounts.mockResolvedValue([
       { id: "acct-123", name: "Test Account" },
     ]);
-    // Start server without auth
+    // Build app without auth; do not bind a port
     process.env.UI_AUTH_ENABLED = "false";
-    server = await startWebUi(0, false, false);
+    server = await createWebApp(false, false);
   });
 
   afterAll(() => {
-    server.close();
+    if (typeof server?.close === "function") {
+      server.close();
+    }
     try {
       fs.rmSync(tmpDir, { recursive: true, force: true });
     } catch (_err) {

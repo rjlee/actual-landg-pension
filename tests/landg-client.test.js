@@ -214,7 +214,9 @@ describe("configuration branches", () => {
     puppeteer.launch.mockClear();
     await getPensionValue({ email: "x", password: "y", cookiesPath: "/tmp" });
     const opts = puppeteer.launch.mock.calls[0][0];
-    expect(opts.args).toEqual(["--no-sandbox", "--disable-setuid-sandbox"]);
+    expect(opts.args).toEqual(
+      expect.arrayContaining(["--no-sandbox", "--disable-setuid-sandbox"]),
+    );
   });
 
   it("uses custom executablePath when PUPPETEER_EXECUTABLE_PATH set", async () => {

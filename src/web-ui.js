@@ -32,9 +32,9 @@ function uiPageHtml(hadRefreshToken, refreshError, uiAuthEnabled, hasCookie) {
 }
 
 /**
- * Launch the Express-based UI server
+ * Build and configure the Express app (no port binding).
  */
-async function startWebUi(httpPort, verbose, debug) {
+async function createWebApp(verbose, debug) {
   // Legal & General-client initial state: no pre-refresh; serverState will track login status
   let hadRefreshToken = false;
   let refreshError = null;
@@ -70,17 +70,7 @@ async function startWebUi(httpPort, verbose, debug) {
   // Serve static assets (JS/CSS) from the public/ directory at project root
   app.use(express.static(path.join(__dirname, "..", "public")));
 
-  // If configured, serve over HTTPS using provided SSL key & cert
-  if (process.env.SSL_KEY && process.env.SSL_CERT) {
-    const sslOpts = {
-      key: fs.readFileSync(process.env.SSL_KEY),
-      cert: fs.readFileSync(process.env.SSL_CERT),
-    };
-    const server = https.createServer(sslOpts, app).listen(httpPort, () => {
-      logger.info({ port: httpPort }, "Web UI HTTPS server listening");
-    });
-    return server;
-  }
+  // Note: port binding is handled by startWebUi; tests can use the app directly
 
   const UI_AUTH_ENABLED = process.env.UI_AUTH_ENABLED !== "false";
   if (UI_AUTH_ENABLED) {
@@ -260,7 +250,25 @@ async function startWebUi(httpPort, verbose, debug) {
     }
     res.status(500).json({ error: err.message });
   });
+  return app;
+}
 
+/**
+ * Launch the Express-based UI server on a specific port.
+ */
+async function startWebUi(httpPort, verbose, debug) {
+  const app = await createWebApp(verbose, debug);
+  // If configured, serve over HTTPS using provided SSL key & cert
+  if (process.env.SSL_KEY && process.env.SSL_CERT) {
+    const sslOpts = {
+      key: fs.readFileSync(process.env.SSL_KEY),
+      cert: fs.readFileSync(process.env.SSL_CERT),
+    };
+    const server = https.createServer(sslOpts, app).listen(httpPort, () => {
+      logger.info({ port: httpPort }, "Web UI HTTPS server listening");
+    });
+    return server;
+  }
   const server = app.listen(httpPort, () => {
     const realPort = server.address().port;
     logger.info({ port: realPort }, "Web UI server listening");
@@ -268,4 +276,4 @@ async function startWebUi(httpPort, verbose, debug) {
   return server;
 }
 
-module.exports = { startWebUi, uiPageHtml };
+module.exports = { startWebUi, createWebApp, uiPageHtml };
