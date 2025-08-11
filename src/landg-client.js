@@ -47,6 +47,12 @@ async function getPensionValue({
     if (process.env.CHROME_DISABLE_SANDBOX) {
       launchOptions.args = ["--no-sandbox", "--disable-setuid-sandbox"];
     }
+    // Reduce Chromium helper processes and crash reporting in containerized environments
+    launchOptions.args = [
+      ...(launchOptions.args || []),
+      "--disable-crash-reporter",
+      "--no-zygote",
+    ];
     // Allow overriding Chromium executable (e.g. system Chromium in Docker)
     if (process.env.PUPPETEER_EXECUTABLE_PATH) {
       launchOptions.executablePath = process.env.PUPPETEER_EXECUTABLE_PATH;

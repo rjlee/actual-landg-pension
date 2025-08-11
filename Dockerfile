@@ -40,7 +40,7 @@ RUN apt-get update \
        ca-certificates fonts-liberation libasound2 libatk1.0-0 libcairo2 libdbus-1-3 libexpat1 \
        libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 \
        libnss3 libpango-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxdamage1 \
-       libxext6 libxfixes3 libxrandr2 libxrender1 libxss1 libxtst6 wget chromium \
+       libxext6 libxfixes3 libxrandr2 libxrender1 libxss1 libxtst6 wget chromium tini \
     && rm -rf /var/lib/apt/lists/*
 
 # When running inside Docker, disable Chrome sandbox (required in many container environments)
@@ -51,5 +51,8 @@ ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 # Copy application and dependencies from build stage
 COPY --from=builder /app /app
 
-# Default command: run the cron-based daemon
-CMD ["npm", "run", "daemon"]
+# Use tini as init to reap orphaned/zombie processes
+ENTRYPOINT ["/usr/bin/tini", "-g", "--"]
+
+# Default command: run the daemon directly with node
+CMD ["node", "src/index.js", "--mode", "daemon"]
