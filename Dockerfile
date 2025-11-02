@@ -1,4 +1,4 @@
-FROM node:24-bullseye-slim AS builder
+FROM node:20-bullseye-slim AS builder
 
 # Set working directory
 WORKDIR /app
@@ -23,14 +23,23 @@ RUN apt-get update \
 ENV PUPPETEER_SKIP_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
-# Install JS dependencies (omit dev dependencies for a lean build)
+# Accept Actual API version and metadata as build args
+ARG ACTUAL_API_VERSION
+ARG GIT_SHA
+ARG APP_VERSION
+
+# Install JS dependencies (production only); allow overriding @actual-app/api
 COPY package*.json ./
-RUN npm install --omit=dev
+RUN if [ -n "$ACTUAL_API_VERSION" ]; then \
+      npm pkg set dependencies.@actual-app/api=$ACTUAL_API_VERSION && \
+      npm install --package-lock-only; \
+    fi && \
+    npm ci --omit=dev
 
 # Copy application source
 COPY . .
 
-FROM node:24-bullseye-slim AS runner
+FROM node:20-bullseye-slim AS runner
 
 WORKDIR /app
 
@@ -50,6 +59,14 @@ ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
 # Copy application and dependencies from build stage
 COPY --from=builder /app /app
+
+# Useful metadata labels
+ARG ACTUAL_API_VERSION
+ARG GIT_SHA
+ARG APP_VERSION
+LABEL org.opencontainers.image.revision="$GIT_SHA" \
+      org.opencontainers.image.version="$APP_VERSION" \
+      io.actual.api.version="$ACTUAL_API_VERSION"
 
 # Use tini as init to reap orphaned/zombie processes
 ENTRYPOINT ["/usr/bin/tini", "-g", "--"]
