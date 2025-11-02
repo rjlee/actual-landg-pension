@@ -1,3 +1,10 @@
+## [1.1.9](https://github.com/rjlee/actual-landg-pension/compare/v1.1.8...v1.1.9) (2025-11-02)
+
+
+### Bug Fixes
+
+* amend container name and actual api version update ([ace65ad](https://github.com/rjlee/actual-landg-pension/commit/ace65ad6a7e3c4ee64df258c9d95d90aba618ee9))
+
 ## [1.1.8](https://github.com/rjlee/actual-landg-pension/compare/v1.1.7...v1.1.8) (2025-08-11)
 
 
