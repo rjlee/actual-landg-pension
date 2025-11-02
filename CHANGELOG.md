@@ -1,3 +1,10 @@
+## [1.1.11](https://github.com/rjlee/actual-landg-pension/compare/v1.1.10...v1.1.11) (2025-11-02)
+
+
+### Bug Fixes
+
+* support actual api version specification in docker compose file ([c9bc2b0](https://github.com/rjlee/actual-landg-pension/commit/c9bc2b028e1d0881e52cc608f14512c3d3857f85))
+
 ## [1.1.10](https://github.com/rjlee/actual-landg-pension/compare/v1.1.9...v1.1.10) (2025-11-02)
 
 
