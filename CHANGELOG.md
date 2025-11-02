@@ -1,3 +1,10 @@
+## [1.1.10](https://github.com/rjlee/actual-landg-pension/compare/v1.1.9...v1.1.10) (2025-11-02)
+
+
+### Bug Fixes
+
+* allow actual-api version build artifacts ([343f99a](https://github.com/rjlee/actual-landg-pension/commit/343f99ad1a45c07fc184066e7c044a24cb555db3))
+
 ## [1.1.9](https://github.com/rjlee/actual-landg-pension/compare/v1.1.8...v1.1.9) (2025-11-02)
 
 
