@@ -13,7 +13,7 @@ function scheduleSync(verbose) {
     logger.info({ job: "sync" }, "Cron scheduling disabled");
     return;
   }
-  const schedule = config.SYNC_CRON || process.env.SYNC_CRON || "45 * * * *";
+  const schedule = config.SYNC_CRON || process.env.SYNC_CRON || "55 17 * * *";
   const timezone =
     config.SYNC_CRON_TIMEZONE || process.env.SYNC_CRON_TIMEZONE || "UTC";
   if (!cron.validate(schedule)) {

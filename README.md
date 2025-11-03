@@ -62,7 +62,7 @@ npm run daemon -- --ui [--verbose]
   - **Enter SMS code**: when prompted, enter the SMS code for 2FA.
   - **Save mapping**: select your Actual Budget account to sync your pension value to, then click **Save Mapping**.
   - **Sync Now**: click **Sync Now** to immediately update your Actual Budget account.
-  - The daemon will also periodically sync based on your cron schedule.
+  - The daemon will also periodically sync based on your cron schedule (default: daily at 17:55; override via `SYNC_CRON`).
 
 ## Security Considerations
 
