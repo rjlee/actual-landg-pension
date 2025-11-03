@@ -1,3 +1,10 @@
+## [1.1.13](https://github.com/rjlee/actual-landg-pension/compare/v1.1.12...v1.1.13) (2025-11-03)
+
+
+### Bug Fixes
+
+* amended cron schedule ([9fd0fd3](https://github.com/rjlee/actual-landg-pension/commit/9fd0fd32cb8a3641ec8d9a64d9e7996434130125))
+
 ## [1.1.12](https://github.com/rjlee/actual-landg-pension/compare/v1.1.11...v1.1.12) (2025-11-03)
 
 
