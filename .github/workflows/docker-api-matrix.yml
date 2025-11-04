@@ -18,7 +18,7 @@ jobs:
       dockerfile: Dockerfile
       context: .
 
-      - name: Prepare tag manifest
+  # Removed legacy steps and aggregate manifest; the reusable workflow handles tagging
         run: |
           printf "api-%s\napi-%s\napi-%s\n" \
             "${{ matrix.ver }}" \
