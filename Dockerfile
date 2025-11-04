@@ -1,4 +1,4 @@
-FROM node:20-bullseye-slim AS builder
+FROM node:22-slim AS builder
 
 # Set working directory
 WORKDIR /app
@@ -10,9 +10,9 @@ RUN apt-get update \
        libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxdamage1 libxext6 libxfixes3 libxrandr2 libxrender1 libxss1 libxtst6 wget \
     && rm -rf /var/lib/apt/lists/*
 
-# Install build dependencies for native modules (if any)
+# Install build dependencies for native modules (better-sqlite3) and puppeteer runtime deps
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends python3 build-essential \
+    && apt-get install -y --no-install-recommends python3 make g++ \
     # Puppeteer dependencies for headless Chrome
     ca-certificates fonts-liberation libasound2 libatk1.0-0 libc6 libcairo2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 \
     libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libnss3 libpango-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 \
@@ -28,18 +28,21 @@ ARG ACTUAL_API_VERSION
 ARG GIT_SHA
 ARG APP_VERSION
 
+ENV HUSKY=0
+ENV PYTHON=/usr/bin/python3
+ENV npm_config_python=/usr/bin/python3
 # Install JS dependencies (production only); allow overriding @actual-app/api
 COPY package*.json ./
 RUN if [ -n "$ACTUAL_API_VERSION" ]; then \
       npm pkg set dependencies.@actual-app/api=$ACTUAL_API_VERSION && \
-      npm install --package-lock-only; \
+      npm install --package-lock-only --no-audit --no-fund; \
     fi && \
-    npm ci --omit=dev
+    npm ci --omit=dev --no-audit --no-fund
 
 # Copy application source
 COPY . .
 
-FROM node:20-bullseye-slim AS runner
+FROM node:22-slim AS runner
 
 WORKDIR /app
 
