@@ -1,3 +1,13 @@
+## [1.1.14](https://github.com/rjlee/actual-landg-pension/compare/v1.1.13...v1.1.14) (2025-11-04)
+
+
+### Bug Fixes
+
+* adopt reusable workflows; gate release on CI; nightly Docker build (amd64); add GHCR cleanup; upgrade Dockerfile to Node 22 with native deps ([e39361d](https://github.com/rjlee/actual-landg-pension/commit/e39361d2e4df948459a53f14f64c88a6f37e8a13))
+* Exclude changelog and workflow files from checking ([b3d69c8](https://github.com/rjlee/actual-landg-pension/commit/b3d69c8a3d5ecd9e9421ac7c56f2d5c11b075901))
+* fix workflow file error ([ad09021](https://github.com/rjlee/actual-landg-pension/commit/ad09021f3e0743f69ac8e29f71745d20a0268051))
+* Fix workflow file error ([c4874d7](https://github.com/rjlee/actual-landg-pension/commit/c4874d77bb3c53a6d803e286b26b4eb9787785c4))
+
 ## [1.1.13](https://github.com/rjlee/actual-landg-pension/compare/v1.1.12...v1.1.13) (2025-11-03)
 
 
