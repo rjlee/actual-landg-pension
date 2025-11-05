@@ -1,3 +1,11 @@
+## [1.1.15](https://github.com/rjlee/actual-landg-pension/compare/v1.1.14...v1.1.15) (2025-11-05)
+
+
+### Bug Fixes
+
+* adopt new workflows ([9c97b45](https://github.com/rjlee/actual-landg-pension/commit/9c97b45f0be4087d9ae5ca570b80faa7ed86d427))
+* move dry run to false ([07b5176](https://github.com/rjlee/actual-landg-pension/commit/07b5176f5b587268339113804b8cb82722af1c3f))
+
 ## [1.1.14](https://github.com/rjlee/actual-landg-pension/compare/v1.1.13...v1.1.14) (2025-11-04)
 
 
