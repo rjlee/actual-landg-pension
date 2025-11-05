@@ -113,20 +113,18 @@ We publish stable `@actual-app/api` versions (exact semver) plus `latest` (alias
 
 - **App releases (semantic‑release):**
   - Tags: `<app-version>`, `<major>.<minor>`, `<major>`, `latest`.
-- **API matrix images (compatibility):**
-  - Scope: latest patch of the last two stable `@actual-app/api` majors.
-  - Tags per image: `api-<patch>`, `api-<minor>`, `api-<major>`.
+- **Docker images (compatibility):**
+  - Scope: latest patch of the last three stable `@actual-app/api` majors.
+  - Tags per image: exact semver plus `latest` (highest stable).
 
 ## Choosing an Image Tag
 
-- **You know your server’s API major (recommended):** use `api-<MAJOR>` (e.g. `api-25`).
-- **You need a specific API patch:** use `api-<MAJOR.MINOR.PATCH>`.
-- **Only care about the app release:** use `<app-version>` or `latest`.
+- Examples: `ghcr.io/rjlee/actual-landg-pension:25.11.0` (pinned) or `ghcr.io/rjlee/actual-landg-pension:latest`.
+- Always pick a semver tag that matches your Actual server’s `@actual-app/api` version, or use `latest` if you want the newest supported version automatically.
 
 ### Compose Defaults
 
-- The provided `docker-compose.yml` uses `api-${ACTUAL_API_MAJOR}` by default; set `ACTUAL_API_MAJOR` in your `.env` (e.g. `25`).
-- Alternatively, use `:api-stable` to always follow the newest supported API major automatically.
+- Set `ACTUAL_IMAGE_TAG` (e.g. `25.11.0`) in `.env` to pin to a specific semver tag, or leave it unset to follow `latest`.
 
 ## Development
 
