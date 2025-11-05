@@ -98,28 +98,16 @@ Ensure your repository has the `GITHUB_TOKEN` secret configured.
 
 - Pull latest image: `docker pull ghcr.io/rjlee/actual-landg-pension:latest`
 - Run with env file:
-  - `docker run --rm --env-file .env ghcr.io/rjlee/actual-landg-pension:latest`
+  - Pinned example: `docker run --rm --env-file .env ghcr.io/rjlee/actual-landg-pension:25.11.0`
+  - Latest example: `docker run --rm --env-file .env ghcr.io/rjlee/actual-landg-pension:latest`
 - Persist data by mounting `./data` to `/app/data`
 - Or via compose: `docker-compose up -d`
 
-## API-Versioned Images
+Important: choose a tag that matches your Actual server's `@actual-app/api` version.
 
-Actual Budget's server and `@actual-app/api` should be compatible. This project publishes API‑specific images so you can pick an image that matches your server:
+## Image Tags
 
-- Exact pin: `ghcr.io/rjlee/actual-landg-pension:api-25.2.1`
-- Minor alias: `ghcr.io/rjlee/actual-landg-pension:api-25.2`
-- Major alias: `ghcr.io/rjlee/actual-landg-pension:api-25`
-
-The Dockerfile accepts a build arg `ACTUAL_API_VERSION` and CI publishes images for the latest patch of the last two API majors (stable only, no nightly/rc/edge). Each build also publishes rolling aliases for the minor and major lines. Images include labels:
-
-- `io.actual.api.version` — the `@actual-app/api` version
-- `org.opencontainers.image.revision` — git SHA
-- `org.opencontainers.image.version` — app version
-
-### Examples
-
-- Run with a specific API line: `docker run --rm --env-file .env ghcr.io/rjlee/actual-landg-pension:api-25`
-- Pin exact API patch: `docker run --rm --env-file .env ghcr.io/rjlee/actual-landg-pension:api-25.2.1`
+We publish stable `@actual-app/api` versions (exact semver) plus `latest` (alias of the highest stable). See the release strategy in `rjlee/actual-auto-ci`.
 
 ## Release Strategy
 
