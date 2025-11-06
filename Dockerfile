@@ -72,7 +72,5 @@ LABEL org.opencontainers.image.revision="$GIT_SHA" \
       io.actual.api.version="$ACTUAL_API_VERSION"
 
 # Use tini as init to reap orphaned/zombie processes
-ENTRYPOINT ["/usr/bin/tini", "-g", "--"]
-
-# Default command: run the daemon directly with node
-CMD ["node", "src/index.js", "--mode", "daemon"]
+ENTRYPOINT ["/usr/bin/tini", "-g", "--", "node", "src/index.js"]
+CMD ["--mode", "daemon"]
