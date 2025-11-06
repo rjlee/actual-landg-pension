@@ -5,7 +5,6 @@ jest.mock("../src/sync", () => ({
 jest.mock("../src/daemon", () => ({
   runDaemon: jest.fn().mockResolvedValue(),
 }));
-const infoMock = jest.fn();
 jest.mock("../src/logger", () => ({ info: jest.fn(), level: "info" }));
 
 const { main } = require("../src/index");
