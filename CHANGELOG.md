@@ -1,3 +1,10 @@
+## [1.1.19](https://github.com/rjlee/actual-landg-pension/compare/v1.1.18...v1.1.19) (2025-11-06)
+
+
+### Bug Fixes
+
+* improved signal heandling and structured logging ([550ecc0](https://github.com/rjlee/actual-landg-pension/commit/550ecc092ae8ee5303b2675836ff62c12ff98aa0))
+
 ## [1.1.18](https://github.com/rjlee/actual-landg-pension/compare/v1.1.17...v1.1.18) (2025-11-06)
 
 
