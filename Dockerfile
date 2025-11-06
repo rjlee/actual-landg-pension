@@ -71,6 +71,11 @@ LABEL org.opencontainers.image.revision="$GIT_SHA" \
       org.opencontainers.image.version="$APP_VERSION" \
       io.actual.api.version="$ACTUAL_API_VERSION"
 
+RUN chmod +x /app/bin/healthcheck.sh
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+  CMD /app/bin/healthcheck.sh
+
 # Use tini as init to reap orphaned/zombie processes
 ENTRYPOINT ["/usr/bin/tini", "-g", "--", "node", "src/index.js"]
 CMD ["--mode", "daemon"]
