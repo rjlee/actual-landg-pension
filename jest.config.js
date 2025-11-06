@@ -1,16 +1,16 @@
-const collectCoverage = process.env.JEST_COVERAGE === 'true';
+const collectCoverage = process.env.JEST_COVERAGE === "true";
 
 const config = {
-  testEnvironment: 'node',
-  roots: ['<rootDir>/src', '<rootDir>/tests'],
-  testMatch: ['**/tests/**/*.test.js'],
-  setupFiles: ['<rootDir>/jest.setup.js'],
+  testEnvironment: "node",
+  roots: ["<rootDir>/src", "<rootDir>/tests"],
+  testMatch: ["**/tests/**/*.test.js"],
+  setupFiles: ["<rootDir>/jest.setup.js"],
   passWithNoTests: true,
-  verbose: process.env.JEST_VERBOSE === 'true',
+  verbose: process.env.JEST_VERBOSE === "true",
   collectCoverage,
-  coverageDirectory: 'coverage',
-  coveragePathIgnorePatterns: ['<rootDir>/src/suppress.js'],
-  testPathIgnorePatterns: ['/node_modules/'],
+  coverageDirectory: "coverage",
+  coveragePathIgnorePatterns: ["<rootDir>/src/suppress.js"],
+  testPathIgnorePatterns: ["/node_modules/"],
 };
 
 if (collectCoverage) {
