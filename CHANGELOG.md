@@ -1,3 +1,11 @@
+## [1.1.18](https://github.com/rjlee/actual-landg-pension/compare/v1.1.17...v1.1.18) (2025-11-06)
+
+
+### Bug Fixes
+
+* fix formatting ([fc14a7b](https://github.com/rjlee/actual-landg-pension/commit/fc14a7b07c724f496da7d08db0ff2f89103fb5cc))
+* Standardised jest configuration ([1f32fc6](https://github.com/rjlee/actual-landg-pension/commit/1f32fc67e60c3586b8df34a289a86100abad22b8))
+
 ## [1.1.17](https://github.com/rjlee/actual-landg-pension/compare/v1.1.16...v1.1.17) (2025-11-05)
 
 
