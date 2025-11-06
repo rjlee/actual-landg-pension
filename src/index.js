@@ -53,8 +53,8 @@ async function main(args = process.argv.slice(2)) {
     .help().argv;
 
   const { mode, ui, httpPort, verbose, debug } = argv;
+  logger.info({ mode }, "Service starting");
   if (verbose) {
-    const logger = require("./logger");
     logger.level = "debug";
   }
   switch (mode) {

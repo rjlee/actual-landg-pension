@@ -4,6 +4,9 @@ const logger = require("./logger");
 const { runSync } = require("./sync");
 const { startWebUi } = require("./web-ui");
 
+let cronJob = null;
+let uiServerPromise = null;
+
 // Schedule periodic sync jobs
 function scheduleSync(verbose) {
   const disableCron =
@@ -11,7 +14,7 @@ function scheduleSync(verbose) {
     config.DISABLE_CRON_SCHEDULING === true;
   if (disableCron) {
     logger.info({ job: "sync" }, "Cron scheduling disabled");
-    return;
+    return null;
   }
   const schedule = config.SYNC_CRON || process.env.SYNC_CRON || "55 17 * * *";
   const timezone =
@@ -22,7 +25,7 @@ function scheduleSync(verbose) {
   }
   logger.info({ job: "sync", schedule, timezone }, "Starting sync daemon");
   let running = false;
-  cron.schedule(
+  const job = cron.schedule(
     schedule,
     async () => {
       const ts = new Date().toISOString();
@@ -46,6 +49,7 @@ function scheduleSync(verbose) {
     },
     timezone ? { timezone } : {},
   );
+  return job;
 }
 
 /**
@@ -53,18 +57,50 @@ function scheduleSync(verbose) {
  * @param {{ui: boolean, httpPort: number}} options
  */
 async function runDaemon({ verbose, ui, httpPort, debug }) {
+  if (cronJob) {
+    cronJob.stop();
+    cronJob = null;
+  }
+  uiServerPromise = null;
+
   const explicitPort =
     typeof config.httpPort !== "undefined" ||
     typeof config.HTTP_PORT !== "undefined" ||
     typeof process.env.HTTP_PORT !== "undefined";
   if (ui || explicitPort) {
-    // Launch Web UI server (pass debug) and catch errors to avoid unhandled promise rejections
-    Promise.resolve(startWebUi(httpPort, verbose, debug)).catch((err) => {
+    uiServerPromise = Promise.resolve(
+      startWebUi(httpPort, verbose, debug),
+    ).catch((err) => {
       logger.error({ err }, "Web UI server failed");
+      return null;
     });
   }
   // Schedule periodic sync jobs; include debug flag so screenshots on errors can occur
-  module.exports.scheduleSync(verbose);
+  cronJob = module.exports.scheduleSync(verbose) || null;
+
+  const shutdown = async (signal) => {
+    logger.info({ signal }, "Shutting down daemon");
+    try {
+      if (cronJob) {
+        cronJob.stop();
+        cronJob = null;
+      }
+      if (uiServerPromise) {
+        const server = await uiServerPromise.catch(() => null);
+        if (server?.close) {
+          await new Promise((resolve) => server.close(resolve));
+        }
+        uiServerPromise = null;
+      }
+    } catch (err) {
+      logger.error({ err }, "Error during shutdown");
+    } finally {
+      process.exit(0);
+    }
+  };
+
+  process.once("SIGINT", shutdown);
+  process.once("SIGTERM", shutdown);
 }
 
 module.exports = { runDaemon, scheduleSync };

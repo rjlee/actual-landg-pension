@@ -5,7 +5,8 @@ jest.mock("../src/sync", () => ({
 jest.mock("../src/daemon", () => ({
   runDaemon: jest.fn().mockResolvedValue(),
 }));
-jest.mock("../src/logger", () => ({ level: "info" }));
+const infoMock = jest.fn();
+jest.mock("../src/logger", () => ({ info: jest.fn(), level: "info" }));
 
 const { main } = require("../src/index");
 const { runSync } = require("../src/sync");
@@ -15,12 +16,17 @@ const logger = require("../src/logger");
 describe("CLI main", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    logger.info.mockClear();
     logger.level = "info";
   });
 
   it("runs sync mode when --mode sync is specified", async () => {
     await main(["--mode", "sync"]);
     expect(runSync).toHaveBeenCalledWith({ verbose: false, debug: false });
+    expect(logger.info).toHaveBeenCalledWith(
+      { mode: "sync" },
+      "Service starting",
+    );
   });
 
   it("runs daemon mode when --mode daemon is specified with flags", async () => {
