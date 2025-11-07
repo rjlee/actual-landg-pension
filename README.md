@@ -1,19 +1,19 @@
 # actual-landg-pension
 
-Sync a Legal & General pension balance into Actual Budget. Automates login, captures the latest value, and pushes an adjustment transaction to the mapped Actual account on a schedule.
+Sync a Legal & General pension balance into Actual Budget. Automates browser login, captures the latest valuation, and posts an adjustment to the configured Actual account on a schedule.
 
 ## Features
 
-- Headless Puppeteer workflow to sign in and capture balances (debug/headful mode available).
-- Web UI for login, mapping, and manual sync triggers.
-- Cron-driven daemon with configurable schedule.
-- Docker image with health check and persistent storage.
+- Headless Puppeteer flow with optional debug/headful mode for troubleshooting.
+- Web UI for login, mapping, and manual sync triggers with session-based authentication.
+- Cron-driven daemon with configurable schedule and persistent state.
+- Docker image with baked-in health check and bind-mount friendly storage.
 
 ## Requirements
 
-- Node.js ≥ 20.
-- Legal & General credentials (see `.env.example` for required values).
-- Actual Budget server connection and credentials.
+- Node.js ≥ 22.
+- Legal & General login credentials (email, password, SMS 2FA).
+- Actual Budget server credentials (`ACTUAL_SERVER_URL`, `ACTUAL_PASSWORD`, `ACTUAL_SYNC_ID`).
 
 ## Installation
 
@@ -23,7 +23,7 @@ cd actual-landg-pension
 npm install
 ```
 
-Optional husky hooks:
+Optional git hooks:
 
 ```bash
 npm run prepare
@@ -41,42 +41,41 @@ docker run -d --env-file .env \
   actual-landg-pension --mode daemon --ui
 ```
 
-Prebuilt images: `ghcr.io/rjlee/actual-landg-pension:<tag>`.
+Published images live at `ghcr.io/rjlee/actual-landg-pension:<tag>` (see [Image tags](#image-tags)).
 
 ## Configuration
 
-- `.env` – Actual credentials, Legal & General login info, cron overrides, etc.
-- `config.yaml` / `config.yml` / `config.json` – optional defaults (copy `config.example.yaml`).
+- `.env` – primary configuration, copy from `.env.example`.
+- `config.yaml` / `config.yml` / `config.json` – optional defaults, copy from `config.example.yaml`.
 
-Precedence: CLI > environment variables > config file.
+Precedence: CLI flags > environment variables > config file.
 
-Common options:
-
-| Setting                            | Description                                           | Default               |
-| ---------------------------------- | ----------------------------------------------------- | --------------------- |
-| `DATA_DIR`                         | App data (cookies, mappings)                          | `./data`              |
-| `BUDGET_DIR`                       | Budget cache                                          | `./data/budget`       |
-| `SYNC_CRON` / `SYNC_CRON_TIMEZONE` | Cron schedule                                         | `55 17 * * *` / `UTC` |
-| `DISABLE_CRON_SCHEDULING`          | Disable cron                                          | `false`               |
-| `HTTP_PORT`                        | Web UI port                                           | `3000`                |
-| `UI_AUTH_ENABLED`                  | Require UI login                                      | `true`                |
-| `SESSION_SECRET`                   | Cookie-session secret (defaults to `ACTUAL_PASSWORD`) | unset                 |
+| Setting                             | Description                                    | Default                      |
+| ----------------------------------- | ---------------------------------------------- | ---------------------------- |
+| `LANDG_EMAIL` / `LANDG_PASSWORD`    | Legal & General credentials                    | required                     |
+| `LANDG_COOKIES_FILE`                | Persisted cookie jar                           | `./data/landg_cookies.json`  |
+| `LANDG_2FA_TIMEOUT`                 | Seconds to enter SMS 2FA in UI                 | `60`                         |
+| `DATA_DIR`                          | Local storage for mappings and cookies         | `./data`                     |
+| `MAPPING_FILE`                      | Account mapping file (relative to `DATA_DIR`)  | `mapping.json`               |
+| `BUDGET_DIR`                        | Budget cache directory                         | `./data/budget`              |
+| `SYNC_CRON` / `SYNC_CRON_TIMEZONE`  | Daemon cron schedule                           | `55 17 * * *` / `UTC`        |
+| `DISABLE_CRON_SCHEDULING`           | Disable cron while in daemon mode              | `false`                      |
+| `HTTP_PORT`                         | Enables Web UI when set or `--ui` passed       | `3000`                       |
+| `UI_AUTH_ENABLED`, `SESSION_SECRET` | Session-auth toggle and cookie secret          | `true`, fallback to password |
+| `LOG_LEVEL`                         | Pino log level                                 | `info`                       |
+| `ENABLE_NODE_VERSION_SHIM`          | Legacy shim for older `@actual-app/api` checks | `false`                      |
 
 ## Usage
 
-### Local
+### CLI modes
 
-```bash
-# One-off sync
-npm run sync -- --debug   # optional headful mode for troubleshooting
+- One-off sync (headful debug): `npm run sync -- --debug`
+- Daemon with UI: `npm run daemon -- --ui --http-port 3000`
+- Disable cron in daemon: `DISABLE_CRON_SCHEDULING=true npm run daemon`
 
-# Daemon with web UI
-npm run daemon -- --ui --http-port 3000
-```
+Visit `http://localhost:3000` (or your configured port) to complete login, map the pension account, and trigger manual syncs.
 
-Visit `http://localhost:3000` (or your configured port) to complete the initial login and map the pension account.
-
-### Docker
+### Docker daemon
 
 ```bash
 docker run --rm --env-file .env \
@@ -97,14 +96,10 @@ npm run format:check
 
 ## Image tags
 
-- `ghcr.io/rjlee/actual-landg-pension:<semver>` – pinned to a specific Actual API line.
-- `ghcr.io/rjlee/actual-landg-pension:latest` – highest supported release.
+- `ghcr.io/rjlee/actual-landg-pension:<semver>` – pinned to a specific `@actual-app/api` release.
+- `ghcr.io/rjlee/actual-landg-pension:latest` – highest supported API version.
 
-## Security considerations
-
-- Store Legal & General credentials securely; the app caches session cookies under `DATA_DIR`.
-- Serve the UI over HTTPS by providing `SSL_KEY`/`SSL_CERT`, or disable the UI once configuration is stable.
-- When running in headless environments, ensure `CHROME_DISABLE_SANDBOX=true` is acceptable for your threat model.
+See [rjlee/actual-auto-ci](https://github.com/rjlee/actual-auto-ci) for tagging policy and automation details.
 
 ## License
 
