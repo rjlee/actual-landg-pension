@@ -1,150 +1,111 @@
 # actual-landg-pension
 
-Sync your Legal & General pension value to an Actual Budget account.
+Sync a Legal & General pension balance into Actual Budget. Automates login, captures the latest value, and pushes an adjustment transaction to the mapped Actual account on a schedule.
 
 ## Features
 
-- Scrape Legal & General pension value from the Legal & General website via headless Chrome (Puppeteer).
-- Web UI to log in, submit SMS 2FA code, map pension to an Actual Budget account, and trigger sync manually.
-- Cron-based daemon mode for automated syncing.
-- Docker build and GitHub Actions workflows for CI, release, and Docker image publishing.
+- Headless Puppeteer workflow to sign in and capture balances (debug/headful mode available).
+- Web UI for login, mapping, and manual sync triggers.
+- Cron-driven daemon with configurable schedule.
+- Docker image with health check and persistent storage.
 
-## Quick Start
+## Requirements
 
-_Before you begin, please review the [Security Considerations](#security-considerations) section below._
+- Node.js ≥ 20.
+- Legal & General credentials (see `.env.example` for required values).
+- Actual Budget server connection and credentials.
 
-1. Copy `.env.example` to `.env` and fill in your Legal & General credentials and Actual Budget settings:
-
-```bash
-# Landg settings
-LANDG_EMAIL=you@example.com
-LANDG_PASSWORD=yourLandgPassword
-LANDG_COOKIES_FILE=./data/landg_cookies.json
-LANDG_2FA_TIMEOUT=60
-
-# Actual Budget API configuration
-ACTUAL_SERVER_URL=https://your-actual-server
-ACTUAL_PASSWORD=yourBudgetPassword
-ACTUAL_SYNC_ID=yourBudgetUUID
-ACTUAL_BUDGET_ENCRYPTION_PASSWORD=yourBudgetFileEncryptionPassword
-
-# Web UI session auth (disable login with UI_AUTH_ENABLED=false)
-UI_AUTH_ENABLED=true
-SESSION_SECRET=someLongRandomString
-
-# TLS/HTTPS (optional)
-SSL_KEY=/path/to/privkey.pem
-SSL_CERT=/path/to/fullchain.pem
-```
-
-2. Copy `config.example.yaml` to `config.yaml` if you need to override defaults (schedule, HTTP_PORT, DATA_DIR, BUDGET_DIR, MAPPING_FILE).
-
-3. Build and run with Docker Compose:
-
-   By default the Docker image installs Debian’s `chromium` package (so Puppeteer uses system Chromium
-   instead of downloading its own) and sets `CHROME_DISABLE_SANDBOX=true` so Puppeteer can run headlessly
-   inside the container.
+## Installation
 
 ```bash
-docker-compose up --build -d
-```
-
-_or_ run locally:
-
-```bash
+git clone https://github.com/rjlee/actual-landg-pension.git
+cd actual-landg-pension
 npm install
-npm run daemon -- --ui [--verbose]
 ```
 
-4. Open your browser to <http://localhost:3000> (or configured `HTTP_PORT`) and:
-
-- **Log in to Legal & General**: click **Login Legal & General**, then enter your Legal & General credentials.
-  - **Enter SMS code**: when prompted, enter the SMS code for 2FA.
-  - **Save mapping**: select your Actual Budget account to sync your pension value to, then click **Save Mapping**.
-  - **Sync Now**: click **Sync Now** to immediately update your Actual Budget account.
-  - The daemon will also periodically sync based on your cron schedule (default: daily at 17:55; override via `SYNC_CRON`).
-
-## Security Considerations
-
-_Web UI security:_
-
-- **Session-based UI authentication** uses a signed session cookie (`cookie-session`) secured by `SESSION_SECRET`.
-  To disable login entirely (open access), set `UI_AUTH_ENABLED=false`.
-- **Landg session cookies** are stored in `LANDG_COOKIES_FILE` to avoid repeated SMS codes.
-  Protect this file with appropriate filesystem permissions to prevent unauthorized access.
-- **TLS/HTTPS:** strongly recommended in production:
+Optional husky hooks:
 
 ```bash
-SSL_KEY=/path/to/privkey.pem
-SSL_CERT=/path/to/fullchain.pem
-```
-
-- **Disable Web UI:** omit the `--ui` flag or remove the HTTP_PORT setting to run one-shot sync (`npm run sync`).
-
-## Configuration
-
-See `.env.example` and `config.example.yaml` for available options.
-
-## GitHub Actions & Releases
-
-We use GitHub Actions + semantic-release to automate version bumps, changelogs, GitHub releases, and Docker image publishing:
-
-- **CI & Release** (`.github/workflows/release.yml`) runs on push to `main`: lint, format-check, test, and `semantic-release`.
-- **Docker Build & Publish** (`.github/workflows/docker.yml`) runs on push to `release`: builds and publishes the Docker image to GitHub Container Registry (`ghcr.io/<owner>/actual-landg-pension:<version>` and `:latest`).
-
-Ensure your repository has the `GITHUB_TOKEN` secret configured.
-
-## Docker
-
-- Pull latest image: `docker pull ghcr.io/rjlee/actual-landg-pension:latest`
-- Run with env file:
-  - Pinned example: `docker run --rm --env-file .env ghcr.io/rjlee/actual-landg-pension:25.11.0`
-  - Latest example: `docker run --rm --env-file .env ghcr.io/rjlee/actual-landg-pension:latest`
-- Persist data by mounting `./data` to `/app/data`
-- Or via compose: `docker-compose up -d`
-
-Important: choose a tag that matches your Actual server's `@actual-app/api` version.
-
-## Image Tags
-
-We publish stable `@actual-app/api` versions (exact semver) plus `latest` (alias of the highest stable). See the release strategy in `rjlee/actual-auto-ci`.
-
-## Release Strategy
-
-- **App releases (semantic‑release):**
-  - Tags: `<app-version>`, `<major>.<minor>`, `<major>`, `latest`.
-- **Docker images (compatibility):**
-  - Scope: latest patch of the last three stable `@actual-app/api` majors.
-  - Tags per image: exact semver plus `latest` (highest stable).
-
-## Choosing an Image Tag
-
-- Examples: `ghcr.io/rjlee/actual-landg-pension:25.11.0` (pinned) or `ghcr.io/rjlee/actual-landg-pension:latest`.
-- Always pick a semver tag that matches your Actual server’s `@actual-app/api` version, or use `latest` if you want the newest supported version automatically.
-
-### Compose Defaults
-
-- Set `ACTUAL_IMAGE_TAG` (e.g. `25.11.0`) in `.env` to pin to a specific semver tag, or leave it unset to follow `latest`.
-
-## Development
-
-We use ESLint, Prettier, Husky (Git hooks), lint-staged, and Jest to enforce code quality.
-
-```bash
-npm install
 npm run prepare
 ```
 
-Lint, format, and test:
+### Docker quick start
 
 ```bash
+cp .env.example .env
+docker build -t actual-landg-pension .
+mkdir -p data/budget
+docker run -d --env-file .env \
+  -p 5011:3000 \
+  -v "$(pwd)/data:/app/data" \
+  actual-landg-pension --mode daemon --ui
+```
+
+Prebuilt images: `ghcr.io/rjlee/actual-landg-pension:<tag>`.
+
+## Configuration
+
+- `.env` – Actual credentials, Legal & General login info, cron overrides, etc.
+- `config.yaml` / `config.yml` / `config.json` – optional defaults (copy `config.example.yaml`).
+
+Precedence: CLI > environment variables > config file.
+
+Common options:
+
+| Setting                            | Description                                           | Default               |
+| ---------------------------------- | ----------------------------------------------------- | --------------------- |
+| `DATA_DIR`                         | App data (cookies, mappings)                          | `./data`              |
+| `BUDGET_DIR`                       | Budget cache                                          | `./data/budget`       |
+| `SYNC_CRON` / `SYNC_CRON_TIMEZONE` | Cron schedule                                         | `55 17 * * *` / `UTC` |
+| `DISABLE_CRON_SCHEDULING`          | Disable cron                                          | `false`               |
+| `HTTP_PORT`                        | Web UI port                                           | `3000`                |
+| `UI_AUTH_ENABLED`                  | Require UI login                                      | `true`                |
+| `SESSION_SECRET`                   | Cookie-session secret (defaults to `ACTUAL_PASSWORD`) | unset                 |
+
+## Usage
+
+### Local
+
+```bash
+# One-off sync
+npm run sync -- --debug   # optional headful mode for troubleshooting
+
+# Daemon with web UI
+npm run daemon -- --ui --http-port 3000
+```
+
+Visit `http://localhost:3000` (or your configured port) to complete the initial login and map the pension account.
+
+### Docker
+
+```bash
+docker run --rm --env-file .env \
+  -p 5011:3000 \
+  -v "$(pwd)/data:/app/data" \
+  ghcr.io/rjlee/actual-landg-pension:latest --mode daemon --ui
+```
+
+## Testing & linting
+
+```bash
+npm test
 npm run lint
-npm run lint:ejs
+npm run lint:fix
 npm run format
 npm run format:check
-npm test
 ```
+
+## Image tags
+
+- `ghcr.io/rjlee/actual-landg-pension:<semver>` – pinned to a specific Actual API line.
+- `ghcr.io/rjlee/actual-landg-pension:latest` – highest supported release.
+
+## Security considerations
+
+- Store Legal & General credentials securely; the app caches session cookies under `DATA_DIR`.
+- Serve the UI over HTTPS by providing `SSL_KEY`/`SSL_CERT`, or disable the UI once configuration is stable.
+- When running in headless environments, ensure `CHROME_DISABLE_SANDBOX=true` is acceptable for your threat model.
 
 ## License
 
-<Add license or disclaimer as needed>
+MIT © contributors.
