@@ -1,4 +1,4 @@
-FROM node:22-slim AS builder
+FROM node:22.14.0-slim AS builder
 
 # Set working directory
 WORKDIR /app
@@ -42,7 +42,7 @@ RUN if [ -n "$ACTUAL_API_VERSION" ]; then \
 # Copy application source
 COPY . .
 
-FROM node:22-slim AS runner
+FROM node:22.14.0-slim AS runner
 
 WORKDIR /app
 
