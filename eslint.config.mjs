@@ -1,20 +1,20 @@
-import js from '@eslint/js';
-import globals from 'globals';
+import js from "@eslint/js";
+import globals from "globals";
 
 const baseConfig = js.configs.recommended;
 const baseLanguageOptions = baseConfig.languageOptions ?? {};
 
 export default [
   {
-    ignores: ['node_modules/', 'data/', 'coverage/', 'dist/', 'resources/'],
+    ignores: ["node_modules/", "data/", "coverage/", "dist/", "resources/"],
   },
   {
     ...baseConfig,
-    files: ['**/*.js'],
+    files: ["**/*.js"],
     languageOptions: {
       ...baseLanguageOptions,
       ecmaVersion: 2022,
-      sourceType: 'module',
+      sourceType: "module",
       globals: {
         ...baseLanguageOptions.globals,
         ...globals.node,
@@ -22,14 +22,14 @@ export default [
     },
     rules: {
       ...baseConfig.rules,
-      'no-unused-vars': [
-        'error',
-        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+      "no-unused-vars": [
+        "error",
+        { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
       ],
     },
   },
   {
-    files: ['tests/**/*.js'],
+    files: ["tests/**/*.js"],
     languageOptions: {
       ...baseLanguageOptions,
       globals: {
@@ -41,7 +41,7 @@ export default [
     },
   },
   {
-    files: ['public/**/*.js'],
+    files: ["public/**/*.js"],
     languageOptions: {
       ...baseLanguageOptions,
       globals: {
