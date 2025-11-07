@@ -71,7 +71,7 @@ async function getPensionValue({
       const cookiesJson = await fs.readFile(cookiesPath, "utf8");
       const cookies = JSON.parse(cookiesJson);
       await page.setCookie(...cookies);
-    } catch (_err) {
+    } catch {
       /* ignore missing or invalid cookies */
     }
     // Navigate to login
@@ -85,7 +85,7 @@ async function getPensionValue({
         timeout: 10000,
       });
       await page.click("#onetrust-accept-btn-handler");
-    } catch (_err) {
+    } catch {
       /* ignore if banner is not present or click fails */
     }
     // Fill credentials step one: wait for the email input and submit
@@ -183,7 +183,7 @@ async function getPensionValue({
         { timeout: 10000 },
       );
       /* eslint-enable no-undef */
-    } catch (_err) {
+    } catch {
       // no-op if optional steps are not present or timeout occurs
     }
     // Extract total savings text from the page

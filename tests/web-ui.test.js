@@ -48,7 +48,7 @@ describeMaybe("Web UI server", () => {
     }
     try {
       fs.rmSync(tmpDir, { recursive: true, force: true });
-    } catch (_err) {
+    } catch {
       /* ignore cleanup errors */
     }
   });
