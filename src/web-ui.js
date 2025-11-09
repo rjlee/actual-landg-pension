@@ -5,7 +5,6 @@ const ejs = require("ejs");
 const logger = require("./logger");
 const fs = require("fs");
 const https = require("https");
-const cookieSession = require("cookie-session");
 const config = require("./config");
 const { openBudget } = require("./utils");
 const {
@@ -19,14 +18,30 @@ const { runSync } = require("./sync");
 const asyncHandler = (fn) => (req, res, next) =>
   Promise.resolve(fn(req, res, next)).catch(next);
 
+const DEFAULT_COOKIE_NAME = "actual-auth";
+
+function hasAuthCookie(req) {
+  const cookieName =
+    process.env.AUTH_COOKIE_NAME?.trim() || DEFAULT_COOKIE_NAME;
+  const cookieHeader = req.headers?.cookie || "";
+  return cookieHeader
+    .split(";")
+    .map((part) => part.trim())
+    .some((part) => part.startsWith(`${cookieName}=`));
+}
+
 // Generate the HTML for the UI page via EJS template
-// uiAuthEnabled toggles display of the logout button in the UI
-function uiPageHtml(hadRefreshToken, refreshError, uiAuthEnabled, hasCookie) {
+function uiPageHtml({
+  hadRefreshToken,
+  refreshError,
+  showLogoutButton,
+  hasCookie,
+}) {
   const templatePath = path.join(__dirname, "views", "index.ejs");
   const template = fs.readFileSync(templatePath, "utf8");
   return ejs.render(
     template,
-    { hadRefreshToken, refreshError, uiAuthEnabled, hasCookie },
+    { hadRefreshToken, refreshError, showLogoutButton, hasCookie },
     { filename: templatePath },
   );
 }
@@ -72,58 +87,6 @@ async function createWebApp(verbose, debug) {
 
   // Note: port binding is handled by startWebUi; tests can use the app directly
 
-  const UI_AUTH_ENABLED = process.env.UI_AUTH_ENABLED !== "false";
-  const LOGIN_PATH = "/login";
-  const loginForm = (error) => {
-    const templatePath = path.join(__dirname, "views", "login.ejs");
-    const template = fs.readFileSync(templatePath, "utf8");
-    return ejs.render(
-      template,
-      { error, LOGIN_PATH },
-      { filename: templatePath },
-    );
-  };
-
-  if (UI_AUTH_ENABLED) {
-    const SECRET = process.env.ACTUAL_PASSWORD;
-    if (!SECRET) {
-      logger.error("ACTUAL_PASSWORD must be set to enable UI authentication");
-      process.exit(1);
-    }
-    app.use(express.urlencoded({ extended: false }));
-    app.use(
-      cookieSession({
-        name: "session",
-        keys: [process.env.SESSION_SECRET || SECRET],
-        maxAge: 24 * 60 * 60 * 1000,
-        httpOnly: true,
-        secure: Boolean(process.env.SSL_KEY && process.env.SSL_CERT),
-        sameSite: "strict",
-      }),
-    );
-
-    app.get(LOGIN_PATH, (_req, res) => res.send(loginForm()));
-    app.post(LOGIN_PATH, (req, res) => {
-      if (req.body.password === SECRET) {
-        req.session.authenticated = true;
-        return res.redirect(req.query.next || "/");
-      }
-      return res.status(401).send(loginForm("Invalid password"));
-    });
-
-    app.use((req, res, next) => {
-      if (req.session.authenticated) {
-        return next();
-      }
-      return res.send(loginForm());
-    });
-
-    app.post("/logout", (req, res) => {
-      req.session = null;
-      res.redirect(LOGIN_PATH);
-    });
-  }
-
   // Log HTTP requests (basic info always; more details if verbose)
   app.use((req, res, next) => {
     const meta = { method: req.method, url: req.url };
@@ -161,9 +124,14 @@ async function createWebApp(verbose, debug) {
     res.json(serverState);
   });
 
-  app.get("/", (_req, res) =>
+  app.get("/", (req, res) =>
     res.send(
-      uiPageHtml(hadRefreshToken, refreshError, UI_AUTH_ENABLED, hasCookie),
+      uiPageHtml({
+        hadRefreshToken,
+        refreshError,
+        hasCookie,
+        showLogoutButton: hasAuthCookie(req),
+      }),
     ),
   );
 

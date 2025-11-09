@@ -5,7 +5,7 @@ Sync a Legal & General pension balance into Actual Budget. Automates browser log
 ## Features
 
 - Headless Puppeteer flow with optional debug/headful mode for troubleshooting.
-- Web UI for login, mapping, and manual sync triggers with session-based authentication.
+- Web UI for login, mapping, and manual sync triggers; designed to sit behind the shared `actual-auto-auth` forward proxy.
 - Cron-driven daemon with configurable schedule and persistent state.
 - Docker image with baked-in health check and bind-mount friendly storage.
 
@@ -61,7 +61,7 @@ Precedence: CLI flags > environment variables > config file.
 | `SYNC_CRON` / `SYNC_CRON_TIMEZONE`  | Daemon cron schedule                           | `55 17 * * *` / `UTC`        |
 | `DISABLE_CRON_SCHEDULING`           | Disable cron while in daemon mode              | `false`                      |
 | `HTTP_PORT`                         | Enables Web UI when set or `--ui` passed       | `3000`                       |
-| `UI_AUTH_ENABLED`, `SESSION_SECRET` | Session-auth toggle and cookie secret          | `true`, fallback to password |
+| `AUTH_COOKIE_NAME`                  | Cookie name forwarded by Traefik for logout UI | `actual-auth`                |
 | `LOG_LEVEL`                         | Pino log level                                 | `info`                       |
 | `ENABLE_NODE_VERSION_SHIM`          | Legacy shim for older `@actual-app/api` checks | `false`                      |
 
@@ -73,7 +73,7 @@ Precedence: CLI flags > environment variables > config file.
 - Daemon with UI: `npm run daemon -- --ui --http-port 3000`
 - Disable cron in daemon: `DISABLE_CRON_SCHEDULING=true npm run daemon`
 
-Visit `http://localhost:3000` (or your configured port) to complete login, map the pension account, and trigger manual syncs.
+Visit `http://localhost:3000` (or your configured port) to complete login, map the pension account, and trigger manual syncs. When deploying in the shared stack, route requests through Traefik + `actual-auto-auth` so the UI remains protected.
 
 ### Docker daemon
 

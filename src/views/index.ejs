@@ -14,8 +14,8 @@
         </button>
         <span id="authStatus" class="ms-2"></span>
       </div>
-      <% if (uiAuthEnabled) { %>
-      <form method="post" action="/logout">
+      <% if (showLogoutButton) { %>
+      <form method="post" action="/auth/logout">
         <button type="submit" class="btn btn-warning">Logout</button>
       </form>
       <% } %>
