@@ -1,6 +1,6 @@
 {
   "name": "actual-landg-pension",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Sync Legal & General pension value to Actual Budget accounts",
   "main": "src/index.js",
   "scripts": {
