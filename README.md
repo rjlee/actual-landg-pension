@@ -50,20 +50,20 @@ Published images live at `ghcr.io/rjlee/actual-landg-pension:<tag>` (see [Image 
 
 Precedence: CLI flags > environment variables > config file.
 
-| Setting                             | Description                                    | Default                      |
-| ----------------------------------- | ---------------------------------------------- | ---------------------------- |
-| `LANDG_EMAIL` / `LANDG_PASSWORD`    | Legal & General credentials                    | required                     |
-| `LANDG_COOKIES_FILE`                | Persisted cookie jar                           | `./data/landg_cookies.json`  |
-| `LANDG_2FA_TIMEOUT`                 | Seconds to enter SMS 2FA in UI                 | `60`                         |
-| `DATA_DIR`                          | Local storage for mappings and cookies         | `./data`                     |
-| `MAPPING_FILE`                      | Account mapping file (relative to `DATA_DIR`)  | `mapping.json`               |
-| `BUDGET_DIR`                        | Budget cache directory                         | `./data/budget`              |
-| `SYNC_CRON` / `SYNC_CRON_TIMEZONE`  | Daemon cron schedule                           | `55 17 * * *` / `UTC`        |
-| `DISABLE_CRON_SCHEDULING`           | Disable cron while in daemon mode              | `false`                      |
-| `HTTP_PORT`                         | Enables Web UI when set or `--ui` passed       | `3000`                       |
-| `AUTH_COOKIE_NAME`                  | Cookie name forwarded by Traefik for logout UI | `actual-auth`                |
-| `LOG_LEVEL`                         | Pino log level                                 | `info`                       |
-| `ENABLE_NODE_VERSION_SHIM`          | Legacy shim for older `@actual-app/api` checks | `false`                      |
+| Setting                            | Description                                    | Default                     |
+| ---------------------------------- | ---------------------------------------------- | --------------------------- |
+| `LANDG_EMAIL` / `LANDG_PASSWORD`   | Legal & General credentials                    | required                    |
+| `LANDG_COOKIES_FILE`               | Persisted cookie jar                           | `./data/landg_cookies.json` |
+| `LANDG_2FA_TIMEOUT`                | Seconds to enter SMS 2FA in UI                 | `60`                        |
+| `DATA_DIR`                         | Local storage for mappings and cookies         | `./data`                    |
+| `MAPPING_FILE`                     | Account mapping file (relative to `DATA_DIR`)  | `mapping.json`              |
+| `BUDGET_DIR`                       | Budget cache directory                         | `./data/budget`             |
+| `SYNC_CRON` / `SYNC_CRON_TIMEZONE` | Daemon cron schedule                           | `55 17 * * *` / `UTC`       |
+| `DISABLE_CRON_SCHEDULING`          | Disable cron while in daemon mode              | `false`                     |
+| `HTTP_PORT`                        | Enables Web UI when set or `--ui` passed       | `3000`                      |
+| `AUTH_COOKIE_NAME`                 | Cookie name forwarded by Traefik for logout UI | `actual-auth`               |
+| `LOG_LEVEL`                        | Pino log level                                 | `info`                      |
+| `ENABLE_NODE_VERSION_SHIM`         | Legacy shim for older `@actual-app/api` checks | `false`                     |
 
 ## Usage
 
