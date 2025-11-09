@@ -1,6 +1,7 @@
 /* eslint-env browser */
 
 // UI elements
+const basePath = window.location.pathname.replace(/\/$/, "");
 const loginBtn = document.getElementById("loginBtn");
 const authStatusEl = document.getElementById("authStatus");
 const twofaSection = document.getElementById("twofaSection");
@@ -22,7 +23,7 @@ async function init() {
   let ready = false;
   while (!ready) {
     try {
-      const res = await fetch("/api/budget-status");
+      const res = await fetch(`${basePath}/api/budget-status`);
       const json = await res.json();
       ready = json.ready;
     } catch {
@@ -42,7 +43,7 @@ async function init() {
 async function loadData() {
   let res;
   try {
-    res = await fetch("/api/data");
+    res = await fetch(`${basePath}/api/data`);
   } catch (err) {
     console.error("Failed to fetch /api/data", err);
     return;
@@ -71,14 +72,14 @@ loginBtn.onclick = async () => {
   authStatusEl.textContent = "Authenticating...";
   twofaSection.style.display = "none";
   hasPrompted2fa = false;
-  await fetch("/api/landg/login", { method: "POST" });
+  await fetch(`${basePath}/api/landg/login`, { method: "POST" });
   pollStatus();
 };
 
 // Submit 2FA code
 submit2faBtn.onclick = async () => {
   const code = document.getElementById("twofaCode").value;
-  await fetch("/api/landg/2fa", {
+  await fetch(`${basePath}/api/landg/2fa`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ code }),
@@ -91,7 +92,7 @@ submit2faBtn.onclick = async () => {
 
 // Poll login status until logged-in or error
 async function pollStatus() {
-  const { status } = await (await fetch("/api/landg/status")).json();
+  const { status } = await (await fetch(`${basePath}/api/landg/status`)).json();
   if (status === "awaiting-2fa") {
     if (!hasPrompted2fa) {
       twofaSection.style.display = "block";
@@ -123,7 +124,7 @@ saveBtn.onclick = async () => {
       lastBalance: mapping[0]?.lastBalance || 0,
     },
   ];
-  const res = await fetch("/api/mappings", {
+  const res = await fetch(`${basePath}/api/mappings`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(newMap),
@@ -140,7 +141,7 @@ syncBtn.onclick = async () => {
   syncBtn.disabled = true;
   statusEl.textContent = "Syncing...";
   try {
-    const res = await fetch("/api/sync", { method: "POST" });
+    const res = await fetch(`${basePath}/api/sync`, { method: "POST" });
     const { count } = await res.json();
     statusEl.textContent = `Synced ${count} transaction(s)`;
   } catch (err) {

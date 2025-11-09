@@ -99,7 +99,7 @@ describeMaybe("Web UI server", () => {
     const res = await request(server).get("/");
     expect(res.status).toBe(200);
     expect(res.text).toMatch(/actual-landg-pension/);
-    expect(res.text).toMatch(/<script src="\/js\/index.js"><\/script>/);
+    expect(res.text).toMatch(/<script src="\.\/js\/index.js"><\/script>/);
   });
 
   test("GET / shows Test Legal & General button in primary style", async () => {
