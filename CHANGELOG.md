@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/rjlee/actual-landg-pension/compare/v1.0.1...v1.1.0) (2025-11-10)
+
+
+### Features
+
+* add auth-enabled compose sample ([8a75d81](https://github.com/rjlee/actual-landg-pension/commit/8a75d814092d2a499acf4044deacde0e8ba54b16))
+
 ## [1.0.1](https://github.com/rjlee/actual-landg-pension/compare/v1.0.0...v1.0.1) (2025-11-09)
 
 
