@@ -43,6 +43,15 @@ docker run -d --env-file .env \
 
 Published images live at `ghcr.io/rjlee/actual-landg-pension:<tag>` (see [Image tags](#image-tags)).
 
+For Compose deployments you now have two templates to choose from:
+
+- `docker-compose.yml` – exposes the UI directly on `HTTP_PORT`.
+- `docker-compose.with-auth.yml.example` – bundles Traefik plus
+  [`actual-auto-auth`](https://github.com/rjlee/actual-auto-auth) so operators
+  authenticate before accessing the UI. Copy it to `docker-compose.yml`, set
+  `AUTH_APP_NAME` / `AUTH_COOKIE_NAME` as needed, and ensure `ACTUAL_PASSWORD`
+  is available to the auth proxy.
+
 ## Configuration
 
 - `.env` – primary configuration, copy from `.env.example`.

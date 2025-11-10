@@ -1,0 +1,80 @@
+version: "3.8"
+
+services:
+  traefik:
+    image: traefik:2.11
+    container_name: actual-landg-pension-traefik
+    command:
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+    ports:
+      - "${HTTP_PORT:-3000}:80"
+    networks:
+      - pension
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    depends_on:
+      - actual-landg-pension
+      - actual-auto-auth
+
+  actual-auto-auth:
+    image: ${AUTH_FORWARD_IMAGE:-ghcr.io/rjlee/actual-auto-auth:latest}
+    pull_policy: always
+    container_name: actual-landg-pension-auth
+    environment:
+      ACTUAL_PASSWORD: ${ACTUAL_PASSWORD:?ACTUAL_PASSWORD must be set}
+      AUTH_APP_NAME: ${AUTH_APP_NAME:-Actual L&G Pension}
+      AUTH_COOKIE_NAME: ${AUTH_COOKIE_NAME:-landg-auth}
+      PORT: 4000
+    networks:
+      - pension
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.landg-auth.rule=PathPrefix(`/auth`)
+      - traefik.http.routers.landg-auth.entrypoints=web
+      - traefik.http.routers.landg-auth.priority=100
+      - traefik.http.services.landg-auth.loadbalancer.server.port=4000
+      - traefik.http.middlewares.landg-forward.forwardauth.address=http://actual-landg-pension-auth:4000/check
+      - traefik.http.middlewares.landg-forward.forwardauth.trustForwardHeader=true
+      - traefik.http.middlewares.landg-forward.forwardauth.authResponseHeaders=Set-Cookie
+      - "traefik.http.middlewares.landg-forward.forwardauth.authRequestHeaders=X-Actual-App-Name,X-Actual-Cookie-Name,X-Forwarded-Host,X-Forwarded-Proto,Cookie"
+
+  actual-landg-pension:
+    image: ghcr.io/rjlee/actual-landg-pension:${ACTUAL_IMAGE_TAG:-latest}
+    container_name: actual-landg-pension
+    env_file:
+      - .env
+    command: ["--mode", "daemon", "--ui", "--http-port", "${HTTP_PORT:-3000}"]
+    environment:
+      AUTH_COOKIE_NAME: ${AUTH_COOKIE_NAME:-landg-auth}
+    restart: unless-stopped
+    depends_on:
+      - actual-auto-auth
+    networks:
+      - pension
+    volumes:
+      - type: bind
+        source: ./data
+        target: /app/data
+      - type: bind
+        source: ./data/budget
+        target: /app/budget
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.landg.rule=PathPrefix(`/`) && !PathPrefix(`/auth`)
+      - traefik.http.routers.landg.entrypoints=web
+      - traefik.http.routers.landg.middlewares=landg-chain@docker
+      - traefik.http.services.landg.loadbalancer.server.port=${HTTP_PORT:-3000}
+      - traefik.http.middlewares.landg-headers.headers.customrequestheaders.X-Actual-App-Name=${AUTH_APP_NAME:-Actual L&G Pension}
+      - traefik.http.middlewares.landg-headers.headers.customrequestheaders.X-Actual-Cookie-Name=${AUTH_COOKIE_NAME:-landg-auth}
+      - traefik.http.middlewares.landg-chain.chain.middlewares=landg-headers@docker,landg-forward@docker
+
+networks:
+  pension:
+    driver: bridge
