@@ -33,7 +33,7 @@
     "pino": "^10.1.0",
     "puppeteer": "^24.29.1",
     "uuid": "^13.0.0",
-    "yargs": "^17.7.2"
+    "yargs": "^18.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",
