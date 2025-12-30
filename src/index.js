@@ -12,49 +12,78 @@ const config = require("./config");
 const { runSync } = require("./sync");
 const { runDaemon } = require("./daemon");
 
+function parseArgs(args) {
+  const parsed = {
+    mode: undefined,
+    ui: undefined,
+    verbose: undefined,
+    httpPort: undefined,
+    debug: undefined,
+  };
+  for (let i = 0; i < args.length; i += 1) {
+    const arg = args[i];
+    const next = () => {
+      if (i + 1 < args.length) {
+        i += 1;
+        return args[i];
+      }
+      return undefined;
+    };
+    switch (arg) {
+      case "--mode":
+      case "-m":
+        parsed.mode = next();
+        break;
+      case "--ui":
+        parsed.ui = true;
+        break;
+      case "--verbose":
+      case "-v":
+        parsed.verbose = true;
+        break;
+      case "--http-port":
+        parsed.httpPort = parseInt(next(), 10);
+        break;
+      case "--debug":
+      case "-d":
+        parsed.debug = true;
+        break;
+      default:
+        break;
+    }
+  }
+  return parsed;
+}
+
 /**
  * Main CLI entrypoint: dispatch to sync or daemon.
  * @param {string[]} args Command-line arguments
  */
 async function main(args = process.argv.slice(2)) {
-  // yargs is now ESM-only; load it lazily so CommonJS runtimes (Jest) stay happy.
-  const { default: yargsFactory } = await import("yargs/yargs");
-  const argv = yargsFactory(args)
-    .option("mode", {
-      alias: "m",
-      choices: ["sync", "daemon"],
-      default: config.mode || "sync",
-      describe: "Mode to run",
-    })
-    .option("ui", {
-      type: "boolean",
-      default: false,
-      describe:
-        "Start web UI server (daemon mode only; also enabled by HTTP_PORT)",
-    })
-    .option("verbose", {
-      alias: "v",
-      type: "boolean",
-      default: false,
-      describe: "Enable verbose logging",
-    })
-    .option("http-port", {
-      type: "number",
-      default: parseInt(
-        config.httpPort ?? config.HTTP_PORT ?? process.env.HTTP_PORT ?? 3000,
-        10,
-      ),
-      describe: "Port for web UI server",
-    })
-    .option("debug", {
-      alias: "d",
-      type: "boolean",
-      default: false,
-      describe: "Launch Puppeteer in headful (debug) mode",
-    })
-    .help().argv;
+  const defaults = {
+    mode: config.mode || "sync",
+    ui: false,
+    verbose: false,
+    httpPort: parseInt(
+      config.httpPort ?? config.HTTP_PORT ?? process.env.HTTP_PORT ?? 3000,
+      10,
+    ),
+    debug: false,
+  };
 
-  const { mode, ui, httpPort, verbose, debug } = argv;
+  const overrides = parseArgs(args);
+  const mode = overrides.mode || defaults.mode;
+  if (!["sync", "daemon"].includes(mode)) {
+    throw new Error(`Unsupported mode: ${mode}`);
+  }
+  const ui = overrides.ui ?? defaults.ui;
+  const verbose = overrides.verbose ?? defaults.verbose;
+  const debug = overrides.debug ?? defaults.debug;
+  const httpPort =
+    Number.isInteger(overrides.httpPort) && overrides.httpPort > 0
+      ? overrides.httpPort
+      : defaults.httpPort;
+
   logger.info({ mode }, "Service starting");
   if (verbose) {
     logger.level = "debug";

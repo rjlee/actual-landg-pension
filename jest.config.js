@@ -7,9 +7,6 @@ const config = {
   setupFiles: ["<rootDir>/jest.setup.js"],
   passWithNoTests: true,
   verbose: process.env.JEST_VERBOSE === "true",
-  testEnvironmentOptions: {
-    experimentalVmModules: true,
-  },
   collectCoverage,
   coverageDirectory: "coverage",
   coveragePathIgnorePatterns: ["<rootDir>/src/suppress.js"],
