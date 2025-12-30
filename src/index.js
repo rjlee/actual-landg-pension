@@ -17,9 +17,7 @@ const { runDaemon } = require("./daemon");
  * @param {string[]} args Command-line arguments
  */
 async function main(args = process.argv.slice(2)) {
-  // yargs is now ESM-only; load it lazily so CommonJS runtimes (Jest) stay happy.
-  const { default: yargsFactory } = await import("yargs/yargs");
-  const argv = yargsFactory(args)
+  const argv = require("yargs/yargs")(args)
     .option("mode", {
       alias: "m",
       choices: ["sync", "daemon"],

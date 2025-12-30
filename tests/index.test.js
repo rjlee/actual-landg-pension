@@ -1,4 +1,64 @@
 // Tests for CLI entrypoint main in src/index.js
+jest.mock("yargs/yargs", () => {
+  const config = require("../src/config");
+  return jest.fn((args = []) => {
+    const parsed = {
+      mode: config.mode || "sync",
+      ui: false,
+      verbose: false,
+      httpPort: parseInt(
+        config.httpPort ?? config.HTTP_PORT ?? process.env.HTTP_PORT ?? 3000,
+        10,
+      ),
+      debug: false,
+    };
+    for (let i = 0; i < args.length; i += 1) {
+      const arg = args[i];
+      const next = () => {
+        if (i + 1 < args.length) {
+          i += 1;
+          return args[i];
+        }
+        return undefined;
+      };
+      switch (arg) {
+        case "--mode":
+        case "-m":
+          parsed.mode = next() || parsed.mode;
+          break;
+        case "--ui":
+          parsed.ui = true;
+          break;
+        case "--verbose":
+        case "-v":
+          parsed.verbose = true;
+          break;
+        case "--http-port": {
+          const val = parseInt(next(), 10);
+          if (!Number.isNaN(val)) parsed.httpPort = val;
+          break;
+        }
+        case "--debug":
+        case "-d":
+          parsed.debug = true;
+          break;
+        default:
+          break;
+      }
+    }
+    const builder = {
+      option: () => builder,
+      help: () => builder,
+    };
+    Object.defineProperty(builder, "argv", {
+      get() {
+        return parsed;
+      },
+    });
+    return builder;
+  });
+});
+
 jest.mock("../src/sync", () => ({
   runSync: jest.fn().mockResolvedValue(),
 }));
