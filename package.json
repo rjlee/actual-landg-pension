@@ -7,7 +7,7 @@
     "start": "node src/index.js --mode sync",
     "sync": "node src/index.js --mode sync",
     "daemon": "node src/index.js --mode daemon",
-    "test": "jest --passWithNoTests",
+    "test": "NODE_OPTIONS=\"--experimental-vm-modules\" jest --passWithNoTests",
     "test:coverage": "JEST_COVERAGE=true npm test",
     "test:watch": "jest --watch",
     "prepare": "husky install || true",
