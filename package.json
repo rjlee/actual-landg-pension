@@ -32,7 +32,7 @@
     "node-cron": "^4.2.1",
     "pino": "^10.3.1",
     "puppeteer": "^24.41.0",
-    "uuid": "^13.0.0",
+    "uuid": "^14.0.0",
     "yargs": "^18.0.0"
   },
   "devDependencies": {
