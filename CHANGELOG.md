@@ -1,3 +1,11 @@
+## [1.1.1](https://github.com/rjlee/actual-landg-pension/compare/v1.1.0...v1.1.1) (2026-05-27)
+
+
+### Bug Fixes
+
+* prevent web UI budget badge from sticking on 'Budget downloading' after container restart ([dfa70d9](https://github.com/rjlee/actual-landg-pension/commit/dfa70d93c2311582b54d289e065679cd056ab8a0))
+* resolve CI failures from eslint v10 and puppeteer 25 ESM changes ([23d016f](https://github.com/rjlee/actual-landg-pension/commit/23d016faed170e7ec14959567bf38ccca733e70b))
+
 # [1.1.0](https://github.com/rjlee/actual-landg-pension/compare/v1.0.1...v1.1.0) (2025-11-10)
 
 
