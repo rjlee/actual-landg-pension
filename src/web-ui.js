@@ -68,18 +68,20 @@ async function createWebApp(verbose, debug) {
   }
   // Determine data directory (mirror utils.openBudget logic)
   const dataDir = process.env.DATA_DIR || config.DATA_DIR || "./data";
-  // Attempt to open/init the Actual‑API budget up front.  Will retry on demand in /api/data.
+  // Attempt to open/init the Actual‑API budget in background.  Will retry on demand in /api/data.
   let budgetReady = false;
-  try {
-    await openBudget();
-    budgetReady = true;
-    logger.info("Initial budget load complete; web UI is ready");
-  } catch (err) {
-    logger.error(
-      { err },
-      "Initial budget load failed; web UI will retry on /api/data",
-    );
-  }
+  openBudget()
+    .then(() => {
+      budgetReady = true;
+      logger.info("Initial budget load complete; web UI is ready");
+    })
+    .catch((err) => {
+      logger.error(
+        { err },
+        "Initial budget load failed; web UI will retry on demand",
+      );
+      budgetReady = true;
+    });
   const app = express();
   app.use(express.json());
   // Serve static assets (JS/CSS) from the public/ directory at project root
@@ -124,15 +126,23 @@ async function createWebApp(verbose, debug) {
     res.json(serverState);
   });
 
-  app.get("/", (req, res) =>
-    res.send(
-      uiPageHtml({
-        hadRefreshToken,
-        refreshError,
-        hasCookie,
-        showLogoutButton: hasAuthCookie(req),
-      }),
-    ),
+  app.get(
+    "/",
+    asyncHandler(async (req, res) => {
+      try {
+        await openBudget();
+      } catch (err) {
+        logger.error({ err }, "Budget download/sync on page load failed");
+      }
+      res.send(
+        uiPageHtml({
+          hadRefreshToken,
+          refreshError,
+          hasCookie,
+          showLogoutButton: hasAuthCookie(req),
+        }),
+      );
+    }),
   );
 
   app.get(
