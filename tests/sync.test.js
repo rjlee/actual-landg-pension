@@ -1,6 +1,8 @@
 const fs = require("fs");
 const path = require("path");
 const os = require("os");
+// Puppeteer 25+ is ESM-only; must mock before any module that requires it
+jest.mock("puppeteer", () => ({ launch: jest.fn() }));
 // Mock budget open/close to avoid external API calls
 jest.mock("../src/utils", () => ({
   openBudget: jest.fn().mockResolvedValue(),

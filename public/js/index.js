@@ -1,5 +1,3 @@
-/* eslint-env browser */
-
 // UI elements
 const basePath = window.location.pathname.replace(/\/$/, "");
 const loginBtn = document.getElementById("loginBtn");

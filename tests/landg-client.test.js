@@ -1,8 +1,7 @@
+jest.mock("puppeteer", () => ({ launch: jest.fn() }));
 const puppeteer = require("puppeteer");
 const logger = require("../src/logger");
 const { getPensionValue, submitTwoFACode } = require("../src/landg-client");
-
-jest.mock("puppeteer");
 
 describe("Legal & General Client", () => {
   let browser;

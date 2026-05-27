@@ -17,6 +17,7 @@ function loadConfig() {
       } catch (err) {
         throw new Error(
           `Failed to parse configuration file ${file}: ${err.message}`,
+          { cause: err },
         );
       }
     }

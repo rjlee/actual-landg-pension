@@ -27,7 +27,7 @@ async function runSync({
   const mappingPath = path.resolve(cwd, dataDir, mappingName);
 
   // Load or initialize mapping entries
-  let mapping = [];
+  let mapping;
   try {
     const data = fs.readFileSync(mappingPath, "utf8");
     mapping = JSON.parse(data);
